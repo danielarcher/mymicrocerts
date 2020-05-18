@@ -1,0 +1,836 @@
+{
+	"info": {
+		"_postman_id": "724ed164-9772-4b03-99ec-f2b4c3c99657",
+		"name": "api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Public Endpoints",
+			"item": [
+				{
+					"name": "home",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}",
+							"host": [
+								"{{host}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b9d0317-f606-4e92-b498-3102f6157fa0",
+								"exec": [
+									"if (pm.response.json().token) {\r",
+									"    pm.environment.set(\"token\", pm.response.json().token);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"{{candidate-email}}\",\n\t\"password\": \"{{newRandomPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login (with admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ec626cde-856f-4623-ad45-cdfc2107d62c",
+								"exec": [
+									"pm.environment.set(\"token\", pm.response.json().token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"admin@mymicrocerts.com\",\n\t\"password\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/plans",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/plans/{id}",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/plans/{{plan-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"plans",
+								"{{plan-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/guest-candidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5d7753de-8ada-4093-930c-5596c9a4792f",
+								"exec": [
+									"pm.environment.set(\"candidate-id\", pm.response.json().id);\r",
+									"pm.environment.set(\"candidate-email\", pm.response.json().email);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "51e6046a-09da-4886-a9f6-e8e5d3af4e4d",
+								"exec": [
+									"var allowed = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\";\r",
+									"var shuffled_unique_str = allowed.split('').sort(function(){return 0.5-Math.random()}).join('');\r",
+									"pm.environment.set(\"newRandomPassword\", shuffled_unique_str);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\": \"{{$randomEmail}}\",\r\n\t\"password\": \"{{newRandomPassword}}\",\r\n\t\"confirm_password\": \"{{newRandomPassword}}\",\r\n\t\"first_name\": \"{{$randomFirstName}}\",\r\n\t\"last_name\": \"{{$randomLastName}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/guest-candidate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"guest-candidate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/candidate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/candidate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"candidate"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Admin Only",
+			"item": [
+				{
+					"name": "/api/plans",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "696b0d65-eff3-4d95-950f-2c69495cb134",
+								"exec": [
+									"pm.environment.set(\"plan-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"{{$randomProductAdjective}} Plan\",\r\n\t\"description\": \"{{$randomLoremSentence}}\",\r\n\t\"price\": {{$randomPrice}},\r\n\t\"max_users\": {{$randomInt}},\r\n\t\"exams_per_month\": {{$randomInt}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/plans",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/company",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/company",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5d661f70-6de1-41e7-9fb4-e84d6e36340c",
+								"exec": [
+									"pm.environment.set(\"company-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\": \"{{$randomCompanyName}}\",\r\n\t\"country\": \"{{$randomCountryCode}}\",\r\n\t\"plan_id\": \"{{plan-id}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/company",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"company"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CompanyOwner",
+			"item": [
+				{
+					"name": "/api/company/{id}/candidates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/company/{{company-id}}/candidates",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"company",
+								"{{company-id}}",
+								"candidates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "05e77a7f-d358-483d-9ac0-1f5a4ddb895f",
+								"exec": [
+									"pm.environment.set(\"exam-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/exam",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/candidate/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/candidate/{{candidate-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"candidate",
+								"{{candidate-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/candidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "06b3ffb8-ff76-48e7-90db-cc15c3e319e8",
+								"exec": [
+									"pm.environment.set(\"candidate-id\", pm.response.json().id);\r",
+									"pm.environment.set(\"candidate-email\", pm.response.json().email);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "dc85c934-14ce-4280-9b2e-41c5e8278529",
+								"exec": [
+									"var allowed = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\";\r",
+									"var shuffled_unique_str = allowed.split('').sort(function () { return 0.5 - Math.random() }).join('');\r",
+									"pm.environment.set(\"newRandomPassword\", shuffled_unique_str);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"email\": \"{{$randomEmail}}\",\r\n\t\"password\": \"{{newRandomPassword}}\",\r\n\t\"confirm_password\": \"{{newRandomPassword}}\",\r\n\t\"first_name\": \"{{$randomFirstName}}\",\r\n\t\"last_name\": \"{{$randomLastName}}\",\r\n\t\"super_user\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/candidate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"candidate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9e4fe164-f82e-4524-9428-faa9bf19f037",
+								"exec": [
+									"pm.environment.set(\"question-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"exam_id\": \"{{exam-id}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"options\": [\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\",\r\n\t\t\t\"correct\": true\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t}\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/question",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"question"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Logged Candidate",
+			"item": [
+				{
+					"name": "/api/company/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/company/{{company-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"company",
+								"{{company-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/exam/{{exam-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam",
+								"{{exam-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/exam",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam/{id}/start",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "de22edfd-e059-472e-9f7d-a596eae0becc",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6e377007-780a-4333-ab0a-a69ac6fd81fe",
+								"exec": [
+									"pm.environment.set(\"attempt-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/exam/{{exam-id}}/start",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam",
+								"{{exam-id}}",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam/{id}/finish",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"{{correct-option-id}}\"]\n\t\t}\n\t]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/exam/{{exam-id}}/finish",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam",
+								"{{exam-id}}",
+								"finish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/me",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/question/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/question",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"question"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

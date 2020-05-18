@@ -1,0 +1,28 @@
+version: '3.3'
+services:
+  php:
+    image: lorisleiva/laravel-docker
+    container_name: mycerts-php
+    command: php -S 0.0.0.0:8000 -t lumen/public
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/var/www
+  mysql:
+    image: mysql
+    container_name: mycerts-mysql
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pass
+      MYSQL_USER: mycerts
+      MYSQL_PASSWORD: mycerts
+      MYSQL_DATABASE: mycerts
+    ports:
+      - 3306:3306
+  adminer:
+    image: adminer
+    container_name: mycerts-adminer
+    ports:
+      - 8080:8080
+    links:
+      - mysql:db

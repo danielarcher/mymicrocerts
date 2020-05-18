@@ -1,0 +1,100 @@
+@startuml
+entity Plan {
+    id
+    name
+    description
+    price
+    max_users
+    attempts_performed_per_month
+    active
+}
+entity Contract {
+    id
+    company_id
+    price
+    payment_frequency_in_days
+    -max_users
+    -attempts_performed_per_month
+    expire_at
+}
+entity Company {
+    id
+    plan_id
+    name
+    country
+    email
+    contact_name
+}
+
+entity Candidate {
+    id
+    company_id (nullable)
+    email
+    password
+    first_name
+    last_name
+    active (bool)
+}
+
+entity Exam {
+    id
+    company_id
+    title
+    description
+    badge (image/svg)
+    max_time_in_minutes
+    max_attempts_per_candidate
+    success_score_in_percent
+    visible_internal (bool)
+    visible_external (bool)
+    private (bool)
+    access_code
+}
+
+entity Attempt {
+    id
+    exam_id
+    candidate_id
+    score_in_percent
+    score_absolute
+    started_at
+    finished_at
+}
+
+entity Question {
+    id
+    number
+    exam_id
+    description
+}
+
+entity Option {
+    id
+    question_id
+    text
+    correct
+}
+
+entity Certificate {
+    id
+    title
+    description
+    badge
+    exam_id
+    candidate_id
+    score_in_percent
+}
+
+Plan -[hidden] Company
+Contract --{ Company
+Company --{ Candidate
+Company --{ Exam
+Exam --{ Question
+Exam --{ Attempt
+Candidate --{ Attempt
+Exam --{ Certificate
+Candidate --{ Certificate
+Question --{ Option
+Question -[hidden] Option
+
+@enduml
