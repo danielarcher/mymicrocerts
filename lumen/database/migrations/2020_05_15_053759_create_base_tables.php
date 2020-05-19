@@ -20,16 +20,27 @@ class CreateBaseTables extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->double('price');
-            $table->integer('max_users');
-            $table->integer('exams_per_month');
+            $table->integer('credits');
+            $table->boolean('active')->default(true);
+            $table->timestamps();
+        });
+        Schema::create('contract', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('company_id');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->double('price');
+            $table->integer('credits_total');
+            $table->integer('credits_used')->default(0);
             $table->boolean('active')->default(true);
             $table->timestamps();
         });
         Schema::create('company', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('plan_id');
             $table->string('name');
             $table->string('country');
+            $table->string('email');
+            $table->string('contact_name');
             $table->timestamps();
         });
         Schema::create('candidate', function (Blueprint $table) {

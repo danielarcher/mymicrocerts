@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Roles;
 
 class CompanyOwnerOnly
@@ -18,8 +19,9 @@ class CompanyOwnerOnly
      */
     public function handle(Request $request, Closure $next)
     {
+        /** @var Candidate $user */
         $user = Auth::user();
-        if ($user->role !== Roles::ADMIN && $user->role !== Roles::COMPANY) {
+        if (!$user->isAdmin() && !$user->isCompanyOwner()) {
             return response('Unauthorized.', 401);
         }
         return $next($request);

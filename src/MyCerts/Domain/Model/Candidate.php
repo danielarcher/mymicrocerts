@@ -6,6 +6,7 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Laravel\Lumen\Auth\Authorizable;
+use MyCerts\Domain\Roles;
 
 class Candidate extends BaseModel implements AuthenticatableContract, AuthorizableContract
 {
@@ -32,5 +33,15 @@ class Candidate extends BaseModel implements AuthenticatableContract, Authorizab
     public function certificates()
     {
         return $this->hasMany(Certificate::class, 'candidate_id');
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === Roles::ADMIN;
+    }
+
+    public function isCompanyOwner()
+    {
+        return $this->role === Roles::COMPANY;
     }
 }

@@ -11,7 +11,7 @@ class CompaniesController extends Controller
 {
     public function list()
     {
-        return response()->json(Company::with('plans')->paginate(2));
+        return response()->json(Company::with('contracts')->paginate(2));
     }
 
     public function create(Request $request)
@@ -19,7 +19,8 @@ class CompaniesController extends Controller
         $company = new Company([
             'name'     => $request->get('name'),
             'country' => $request->get('country'),
-            'plan_id' => $request->get('plan_id'),
+            'email' => $request->get('email'),
+            'contact_name' => $request->get('contact_name'),
         ]);
         $company->save();
 
@@ -28,6 +29,6 @@ class CompaniesController extends Controller
 
     public function findOne($id)
     {
-        return response()->json(Company::with('plans')->findOrFail($id));
+        return response()->json(Company::with('contracts')->find($id));
     }
 }

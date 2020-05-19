@@ -4,26 +4,24 @@ entity Plan {
     name
     description
     price
-    max_users
-    attempts_performed_per_month
-    active
+    credits
+    active (bool)
 }
 entity Contract {
     id
     company_id
     price
-    payment_frequency_in_days
-    -max_users
-    -attempts_performed_per_month
-    expire_at
+    credits_total
+    credits_used
+    active (bool)
 }
 entity Company {
     id
     plan_id
     name
     country
-    email
-    contact_name
+    +email
+    +contact_name
 }
 
 entity Candidate {
@@ -86,7 +84,8 @@ entity Certificate {
 }
 
 Plan -[hidden] Company
-Contract --{ Company
+Company -[hidden] Contract
+Contract }-- Company
 Company --{ Candidate
 Company --{ Exam
 Exam --{ Question

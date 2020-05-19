@@ -258,7 +258,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\": \"{{$randomProductAdjective}} Plan\",\r\n\t\"description\": \"{{$randomLoremSentence}}\",\r\n\t\"price\": {{$randomPrice}},\r\n\t\"max_users\": {{$randomInt}},\r\n\t\"exams_per_month\": {{$randomInt}}\r\n}",
+							"raw": "{\r\n\t\"name\": \"{{$randomProductAdjective}} Plan\",\r\n\t\"description\": \"{{$randomLoremSentence}}\",\r\n\t\"price\": {{$randomPrice}},\r\n\t\"credits\": {{$randomInt}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -335,7 +335,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\": \"{{$randomCompanyName}}\",\r\n\t\"country\": \"{{$randomCountryCode}}\",\r\n\t\"plan_id\": \"{{plan-id}}\"\r\n}",
+							"raw": "{\r\n\t\"name\": \"{{$randomCompanyName}}\",\r\n\t\"country\": \"{{$randomCountryCode}}\",\r\n\t\"email\": \"{{$randomCompanyEmail}}\",\r\n\t\"contact_name\": \"{{$randomName}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -361,6 +361,45 @@
 		{
 			"name": "CompanyOwner",
 			"item": [
+				{
+					"name": "/api/plans/{id}/buy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"company_id\":\"{{company-id}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/plans/{{plan-id}}/buy",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"plans",
+								"{{plan-id}}",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "/api/company/{id}/candidates",
 					"request": {
@@ -690,7 +729,7 @@
 							"script": {
 								"id": "6e377007-780a-4333-ab0a-a69ac6fd81fe",
 								"exec": [
-									"pm.environment.set(\"attempt-id\", pm.response.json().id);"
+									"pm.environment.set(\"attempt-id\", pm.response.json().attempt.id);"
 								],
 								"type": "text/javascript"
 							}

@@ -9,10 +9,10 @@ class Company extends BaseModel
 {
     protected $table = 'company';
 
-    protected $fillable = ['name','country','plan_id'];
+    protected $fillable = ['name','country','email','contact_name'];
 
-    public function plans()
+    public function contracts()
     {
-        return $this->belongsTo(Plan::class, 'plan_id');
+        return $this->hasMany(Contract::class, 'company_id');
     }
 }

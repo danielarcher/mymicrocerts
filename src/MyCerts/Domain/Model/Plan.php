@@ -6,7 +6,7 @@ class Plan extends BaseModel
 {
     protected $table = 'plan';
 
-    protected $fillable = ['name','description','price', 'max_users', 'exams_per_month'];
+    protected $fillable = ['name','description','price', 'credits'];
 
     protected $hidden = ['created_at','updated_at', 'active'];
 }
