@@ -13,7 +13,7 @@ class QuestionController extends Controller
 {
     public function list()
     {
-        return response()->json(Question::with('options')->get());
+        return response()->json(Question::with('options')->paginate());
     }
 
     public function create(Request $request)

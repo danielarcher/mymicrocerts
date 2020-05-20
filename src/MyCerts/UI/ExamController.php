@@ -9,10 +9,15 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use MyCerts\Domain\Certification;
+use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\AttemptNotFound;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
 use MyCerts\Domain\Exception\ExamNotFound;
+use MyCerts\Domain\Exception\NoAttemptsLeftForThisExam;
+use MyCerts\Domain\Exception\NoCreditsLeft;
+use MyCerts\Domain\Exception\UserAlreadyHaveThisCertification;
 use MyCerts\Domain\Model\Attempt;
+use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Certificate;
 use MyCerts\Domain\Model\Exam;
 
@@ -48,10 +53,23 @@ class ExamController extends Controller
         return response()->json(Exam::find($id));
     }
 
+    /**
+     * @param         $id
+     * @param Request $request
+     * @return JsonResponse
+     * @throws NoCreditsLeft
+     */
     public function start($id, Request $request)
     {
         $certification = new Certification();
-        $response = $certification->startExam($id, $request->get('candidate_id'));
+        try {
+            $selectedUser = $this->validateReceivedUser($request);
+            $response = $certification->startExam($id, $selectedUser);
+        } catch (NoCreditsLeft | UserAlreadyHaveThisCertification | NoAttemptsLeftForThisExam $e) {
+            return response()->json(['error' => $e->getMessage()],Response::HTTP_CONFLICT);
+        } catch (AccessDeniedToThisExam $e) {
+            return response()->json(['error' => $e->getMessage()],Response::HTTP_FORBIDDEN);
+        }
 
         return response()->json($response, Response::HTTP_CREATED);
     }
@@ -76,5 +94,12 @@ class ExamController extends Controller
         return response()->json($response, Response::HTTP_CREATED);
     }
 
+    private function validateReceivedUser(Request $request)
+    {
+        if ($request->get('candidate_id') && Auth::user()->isAdmin()) {
+            return Candidate::findOrFail($request->get('candidate_id'));
+        }
+        return Auth::user();
+    }
 
 }

@@ -30,7 +30,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
      */
     $router->post('guest-candidate','CandidateController@createGuest');
     $router->get('plans', 'PlansController@list');
-    #$router->get('plans/{id}', 'PlansController@findOne');
 
     /**
      * Authentication Required
@@ -52,9 +51,11 @@ $router->group(['prefix' => 'api'], function (Router $router) {
             $router->post('exam', 'ExamController@create');
             $router->get('company/{id}/candidates', 'CandidateController@listPerCompany');
             $router->post('candidate', 'CandidateController@create');
-            $router->post('question', 'QuestionController@create');
             $router->get('candidate/{id}', 'CandidateController@findOne');
             $router->post('plans/{id}/buy', 'PlansController@buy');
+            $router->get('question', 'QuestionController@list');
+            $router->post('question', 'QuestionController@create');
+            $router->get('question/{id}', 'QuestionController@findOne');
         });
 
         /**
@@ -69,6 +70,6 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->post('exam/{id}/start', 'ExamController@start');
         $router->post('exam/{id}/finish', 'ExamController@finish');
 
-        $router->get('question/{id}', 'QuestionController@findOne');
+
     });
 });

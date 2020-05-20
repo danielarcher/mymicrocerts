@@ -3,34 +3,49 @@
 namespace MyCerts\Domain;
 
 use Illuminate\Http\Response;
+use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\AttemptNotFound;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
 use MyCerts\Domain\Exception\ExamNotFound;
+use MyCerts\Domain\Exception\NoAttemptsLeftForThisExam;
+use MyCerts\Domain\Exception\NoCreditsLeft;
 use MyCerts\Domain\Exception\UserAlreadyHaveThisCertification;
 use MyCerts\Domain\Model\Attempt;
+use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Certificate;
+use MyCerts\Domain\Model\Company;
 use MyCerts\Domain\Model\Exam;
 
 class Certification
 {
     /**
-     * @param string $examId
-     * @param string $candidateId
-     * @return Attempt
+     * @param string    $examId
+     * @param Candidate $candidate
+     * @return array
+     * @throws AccessDeniedToThisExam
+     * @throws NoAttemptsLeftForThisExam
+     * @throws NoCreditsLeft
      * @throws UserAlreadyHaveThisCertification
      */
-    public function startExam(string $examId, string $candidateId): array
+    public function startExam(string $examId, Candidate $candidate): array
     {
-        $this->assertCompanyHasExamsLeft($examId);
-        $this->assertCandidateHasAccessToThisExam($examId, $candidateId);
-        $this->assertCandidateHasAttemptsLeft($examId, $candidateId);
-        $this->assertCandidateDontHasCertificate($examId, $candidateId);
+        /** @var Exam $exam */
+        $exam = Exam::with('company')->findOrFail($examId);
+        $this->assertCompanyHasExamsLeft($exam);
+        $this->assertCandidateHasAccessToThisExam($exam, $candidate);
+        $this->assertCandidateHasAttemptsLeft($exam, $candidate);
+        $this->assertCandidateDontHasCertificate($examId, $candidate);
 
         $attempt = new Attempt([
             'exam_id'      => $examId,
-            'candidate_id' => $candidateId,
+            'candidate_id' => $candidate->id,
         ]);
         $attempt->save();
+
+        /**
+         * Withdraw one credit
+         */
+        $exam->company->useCredit();
 
         $exam = Exam::with('questions.options')->findOrFail($attempt->exam_id);
 
@@ -41,31 +56,54 @@ class Certification
     }
 
     /**
-     * @param string $examId
-     * @param string $candidateId
+     * @param string    $examId
+     * @param Candidate $candidate
      * @throws UserAlreadyHaveThisCertification
      */
-    private function assertCandidateDontHasCertificate(string $examId, string $candidateId): void
+    private function assertCandidateDontHasCertificate(string $examId, Candidate $candidate): void
     {
-        $certificate = Certificate::where('exam_id', $examId)->where('candidate_id', $candidateId)->get();
-        if (!empty($certificate)) {
-            #throw new UserAlreadyHaveThisCertification();
+        if ($candidate->hasCertificateFor($examId)) {
+            throw new UserAlreadyHaveThisCertification();
         }
+        #$certificate = Certificate::where('exam_id', $examId)->where('candidate_id', $candidateId)->first();
+        #if (!empty($certificate)) {
+
+        #}
     }
 
-    private function assertCandidateHasAttemptsLeft(string $examId, string $candidateId): void
+    private function assertCandidateHasAttemptsLeft(Exam $exam, Candidate $candidate): void
     {
+        $currentAttempts = Attempt::where(['candidate_id' => $candidate->id, 'exam_id' => $exam->id])->count();
+        if ($currentAttempts >= $exam->max_attempts_per_candidate) {
+            throw new NoAttemptsLeftForThisExam();
+        }
         return;
     }
 
-    private function assertCompanyHasExamsLeft(string $examId)
+    /**
+     * @param Exam $exam
+     * @throws NoCreditsLeft
+     */
+    private function assertCompanyHasExamsLeft(Exam $exam)
     {
+        if (! $exam->company->hasCredits()) {
+            throw new NoCreditsLeft();
+        }
         return;
     }
 
-    private function assertCandidateHasAccessToThisExam(string $examId, string $candidateId)
+    private function assertCandidateHasAccessToThisExam(Exam $exam, Candidate $candidate)
     {
-        return;
+        if ($exam->private) {
+            throw new AccessDeniedToThisExam();
+        }
+        if ($exam->company_id === $candidate->company_id || $candidate->isAdmin()) {
+            return;
+        }
+        if ($exam->visible_external) {
+            return;
+        }
+        throw new AccessDeniedToThisExam();
     }
 
     /**
@@ -78,7 +116,7 @@ class Certification
     public function finishExam(string $attemptId, array $answers): array
     {
         $attempt = $this->findAttempt($attemptId);
-        $this->assertAttemptIsNotFinished($attempt);
+        #$this->assertAttemptIsNotFinished($attempt);
 
         $exam = Exam::with('questions')->findOrFail($attempt->exam_id);
 

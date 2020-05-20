@@ -2,6 +2,12 @@
 
 namespace MyCerts\Domain\Model;
 
+
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam query()
+ */
 class Exam extends BaseModel
 {
     protected $table = 'exam';

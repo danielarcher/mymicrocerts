@@ -44,4 +44,14 @@ class Candidate extends BaseModel implements AuthenticatableContract, Authorizab
     {
         return $this->role === Roles::COMPANY;
     }
+
+    public function hasCertificateFor(string $examId)
+    {
+        foreach ($this->certificates as $cert) {
+            if ($cert->exam_id == $examId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

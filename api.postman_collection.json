@@ -599,13 +599,70 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"exam_id\": \"{{exam-id}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"options\": [\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\",\r\n\t\t\t\"correct\": true\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"exam_id\": \"{{exam-id}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"options\": [\r\n\t\t{\r\n\t\t\t\"text\": \"true-{{$randomLoremSentence}}\",\r\n\t\t\t\"correct\": true\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
+						"url": {
+							"raw": "{{host}}/api/question",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/question/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/question/{{question-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"question",
+								"{{question-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/question/{id} Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
 						"url": {
 							"raw": "{{host}}/api/question",
 							"host": [
@@ -729,7 +786,9 @@
 							"script": {
 								"id": "6e377007-780a-4333-ab0a-a69ac6fd81fe",
 								"exec": [
-									"pm.environment.set(\"attempt-id\", pm.response.json().attempt.id);"
+									"if (pm.response.json().attempt) {\r",
+									"    pm.environment.set(\"attempt-id\", pm.response.json().attempt.id);\r",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -789,7 +848,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"{{correct-option-id}}\"]\n\t\t}\n\t]\n}",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"829d48c4-1683-45d5-a679-288a88639b2a\"]\n\t\t}\n\t]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -834,34 +893,6 @@
 							"path": [
 								"api",
 								"me"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "/api/question/{id}",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{host}}/api/question",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"api",
-								"question"
 							]
 						}
 					},

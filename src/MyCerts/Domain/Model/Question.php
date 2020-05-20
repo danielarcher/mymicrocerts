@@ -36,7 +36,7 @@ class Question extends BaseModel
     public function correctOptionsGrouped()
     {
         return array_map(function($option) {
-            return $option['option_id'];
+            return $option->id;
         }, $this->correctOptionsOnly());
     }
 }
