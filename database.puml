@@ -62,6 +62,7 @@ entity Attempt {
 entity Question {
     id
     number
+    company_id
     exam_id
     description
 }

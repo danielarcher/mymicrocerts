@@ -11,8 +11,11 @@ class Question extends BaseModel
     protected $fillable = [
         'exam_id',
         'number',
-        'description'
+        'description',
+        'company_id',
     ];
+
+    protected $hidden = ['created_at','updated_at', 'company_id'];
 
     public function options()
     {

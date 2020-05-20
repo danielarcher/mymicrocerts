@@ -25,8 +25,7 @@ class ExamController extends Controller
 {
     public function list(Request $request)
     {
-        $candidate = Auth::user();
-        return response()->json(Exam::where('company_id', $candidate->company_id)->get());
+        return response()->json(Exam::where('company_id', Auth::user()->company_id)->get());
     }
 
     public function create(Request $request)

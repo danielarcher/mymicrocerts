@@ -14,7 +14,10 @@ class CandidateController extends Controller
 {
     public function list()
     {
-        return response()->json(Candidate::all()->makeVisible('company_id'));
+        if (Auth::user()->isAdmin()) {
+            return response()->json(Candidate::all()->makeVisible('company_id'));
+        }
+        return response()->json(Candidate::where(['company_id'=>Auth::user()]));
     }
 
     public function listPerCompany($id)
