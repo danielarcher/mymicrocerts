@@ -46,7 +46,8 @@ entity Exam {
     visible_internal (bool)
     visible_external (bool)
     private (bool)
-    access_code
+    access_id
+    access_password
 }
 
 entity Attempt {

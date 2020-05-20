@@ -4,10 +4,12 @@ namespace MyCerts\UI;
 
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use MyCerts\Domain\Certification;
 use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\AttemptNotFound;
@@ -20,6 +22,7 @@ use MyCerts\Domain\Model\Attempt;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Certificate;
 use MyCerts\Domain\Model\Exam;
+use Ramsey\Uuid\Uuid;
 
 class ExamController extends Controller
 {
@@ -40,9 +43,15 @@ class ExamController extends Controller
             'visible_internal'           => $request->get('visible_internal'),
             'visible_external'           => $request->get('visible_external'),
             'private'                    => $request->get('private'),
-            'access_code'                => $request->get('access_code'),
         ]));
         $entity->save();
+
+        if ($request->get('visible_external')) {
+            $entity->access_id = base64_encode(Uuid::uuid4()->toString());
+            $entity->access_password = $request->get('password') ? Hash::make($request->get('password')) : null;
+            #$entity->link = route('external.index', ['id' => $entity->access_id]);
+            $entity->save();
+        }
 
         return response()->json($entity, Response::HTTP_CREATED);
     }
@@ -68,6 +77,8 @@ class ExamController extends Controller
             return response()->json(['error' => $e->getMessage()],Response::HTTP_CONFLICT);
         } catch (AccessDeniedToThisExam $e) {
             return response()->json(['error' => $e->getMessage()],Response::HTTP_FORBIDDEN);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Exam not found'],Response::HTTP_NOT_FOUND);
         }
 
         return response()->json($response, Response::HTTP_CREATED);

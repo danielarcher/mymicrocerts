@@ -47,7 +47,7 @@ class CreateBaseTables extends Migration
             $table->uuid('id')->primary();
             $table->uuid('company_id')->nullable();
             $table->string('email');
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->string('first_name');
             $table->string('last_name');
             $table->string('role')->default('guest');
@@ -67,7 +67,8 @@ class CreateBaseTables extends Migration
             $table->boolean('visible_internal')->default(true);
             $table->boolean('visible_external')->default(false);
             $table->boolean('private')->default(false);
-            $table->text('access_code')->nullable();
+            $table->text('access_id')->nullable();
+            $table->text('access_password')->nullable();
             $table->timestamps();
         });
         Schema::create('attempt', function (Blueprint $table) {

@@ -222,6 +222,119 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "/link/exam/{id} --external--",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/link/exam/{{access-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"link",
+								"exam",
+								"{{access-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/link/exam/{id}/start --external--",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1b3bb964-1947-4444-b68d-3efc7ed0ac1a",
+								"exec": [
+									"if (pm.response.json().attempt) {\r",
+									"    pm.environment.set(\"attempt-id\", pm.response.json().attempt.id);\r",
+									"    pm.environment.set(\"candidate-id\", pm.response.json().candidate_id);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "{{$randomFirstName}}",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "{{$randomLastName}}",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "{{$randomEmail}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/link/exam/{{access-id}}/start",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"link",
+								"exam",
+								"{{access-id}}",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/link/exam/{id}/finish --external--",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"733d41fb-0a81-41f5-a761-df0ced1034b9\"]\n\t\t}\n\t]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/link/exam/{{access-id}}/finish",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"link",
+								"exam",
+								"{{access-id}}",
+								"finish"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -438,7 +551,10 @@
 							"script": {
 								"id": "05e77a7f-d358-483d-9ac0-1f5a4ddb895f",
 								"exec": [
-									"pm.environment.set(\"exam-id\", pm.response.json().id);"
+									"pm.environment.set(\"exam-id\", pm.response.json().id);\r",
+									"if (pm.response.json().access_id) {\r",
+									"    pm.environment.set(\"access-id\", pm.response.json().access_id)\r",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -459,7 +575,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\"\r\n}",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -550,7 +666,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"email\": \"{{$randomEmail}}\",\r\n\t\"password\": \"{{newRandomPassword}}\",\r\n\t\"confirm_password\": \"{{newRandomPassword}}\",\r\n\t\"first_name\": \"{{$randomFirstName}}\",\r\n\t\"last_name\": \"{{$randomLastName}}\",\r\n\t\"super_user\": false\r\n}",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"email\": \"{{$randomEmail}}\",\r\n\t\"password\": \"{{newRandomPassword}}\",\r\n\t\"confirm_password\": \"{{newRandomPassword}}\",\r\n\t\"first_name\": \"{{$randomFirstName}}\",\r\n\t\"last_name\": \"{{$randomLastName}}\",\r\n\t\"super_user\": true\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -848,7 +964,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"829d48c4-1683-45d5-a679-288a88639b2a\"]\n\t\t}\n\t]\n}",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"d16dd3cc-a791-4363-8017-dd18534c9b86\"]\n\t\t}\n\t]\n}",
 							"options": {
 								"raw": {
 									"language": "json"

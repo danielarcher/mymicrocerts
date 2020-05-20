@@ -65,10 +65,6 @@ class Certification
         if ($candidate->hasCertificateFor($examId)) {
             throw new UserAlreadyHaveThisCertification();
         }
-        #$certificate = Certificate::where('exam_id', $examId)->where('candidate_id', $candidateId)->first();
-        #if (!empty($certificate)) {
-
-        #}
     }
 
     private function assertCandidateHasAttemptsLeft(Exam $exam, Candidate $candidate): void

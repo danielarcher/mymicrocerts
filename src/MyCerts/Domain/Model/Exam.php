@@ -22,8 +22,11 @@ class Exam extends BaseModel
         'visible_internal',
         'visible_external',
         'private',
-        'access_code',
+        'access_id',
+        'access_password',
     ];
+
+    protected $hidden = ['created_at','updated_at','access_password'];
 
     public function company()
     {

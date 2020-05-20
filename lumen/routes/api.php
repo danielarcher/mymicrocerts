@@ -13,6 +13,7 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
 use Laravel\Lumen\Routing\Router;
 
 $router->get('/', function () use ($router) {
@@ -23,6 +24,13 @@ $router->get('/', function () use ($router) {
  * Login Url
  */
 $router->get('/login', 'LoginController@login');
+
+/**
+ * External exam with guest user
+ */
+$router->get('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
+$router->post('link/exam/{id}/start', ['as' => 'external.start', 'uses' => 'ExternalExamController@start']);
+$router->post('link/exam/{id}/finish', ['as' => 'external.finish', 'uses' => 'ExternalExamController@finish']);
 
 $router->group(['prefix' => 'api'], function (Router $router) {
     /**
