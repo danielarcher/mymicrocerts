@@ -22,6 +22,7 @@ class CreateBaseTables extends Migration
             $table->double('price');
             $table->integer('credits');
             $table->boolean('active')->default(true);
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('contract', function (Blueprint $table) {
@@ -33,6 +34,7 @@ class CreateBaseTables extends Migration
             $table->integer('credits_total');
             $table->integer('credits_used')->default(0);
             $table->boolean('active')->default(true);
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('company', function (Blueprint $table) {
@@ -41,6 +43,7 @@ class CreateBaseTables extends Migration
             $table->string('country');
             $table->string('email');
             $table->string('contact_name');
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('candidate', function (Blueprint $table) {
@@ -53,6 +56,7 @@ class CreateBaseTables extends Migration
             $table->string('role')->default('guest');
             $table->boolean('verified')->default(false);
             $table->boolean('active')->default(true);
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('exam', function (Blueprint $table) {
@@ -69,6 +73,7 @@ class CreateBaseTables extends Migration
             $table->boolean('private')->default(false);
             $table->text('access_id')->nullable();
             $table->text('access_password')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('attempt', function (Blueprint $table) {
@@ -86,6 +91,7 @@ class CreateBaseTables extends Migration
             $table->uuid('exam_id');
             $table->uuid('candidate_id');
             $table->integer('score_in_percent');
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('question', function (Blueprint $table) {
@@ -94,6 +100,7 @@ class CreateBaseTables extends Migration
             $table->uuid('company_id');
             $table->integer('number')->nullable();
             $table->text('description');
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('option', function (Blueprint $table) {
@@ -101,6 +108,7 @@ class CreateBaseTables extends Migration
             $table->uuid('question_id');
             $table->text('text');
             $table->boolean('correct')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -120,5 +128,6 @@ class CreateBaseTables extends Migration
         Schema::dropIfExists('company');
         Schema::dropIfExists('plan');
         Schema::dropIfExists('option');
+        Schema::dropIfExists('contract');
     }
 }

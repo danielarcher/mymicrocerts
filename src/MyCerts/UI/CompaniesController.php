@@ -31,4 +31,21 @@ class CompaniesController extends Controller
     {
         return response()->json(Company::with('contracts')->find($id));
     }
+
+    public function delete($id)
+    {
+        if (!Company::find($id)) {
+            return response()->json(['error' => 'Entity not found'], Response::HTTP_NOT_FOUND);
+        }
+        foreach (Company::find($id)->questions()->get() as $question) {
+            $question->options()->delete();
+        }
+        #Company::find($id)->questions()->options()->delete();
+        Company::find($id)->questions()->delete();
+        Company::find($id)->exams()->delete();
+        Company::find($id)->candidates()->delete();
+        Company::find($id)->contracts()->delete();
+        Company::destroy($id);
+        return response('',Response::HTTP_NO_CONTENT);
+    }
 }

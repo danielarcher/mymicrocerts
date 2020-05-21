@@ -76,7 +76,16 @@ class CandidateController extends Controller
 
     public function findMe()
     {
-        $user = Auth::user();
-        return response()->json(Candidate::with('certificates')->find($user->id));
+        return response()->json(Candidate::with('certificates')->find(Auth::user()->id));
+    }
+
+    public function delete($id)
+    {
+        if (!Candidate::find($id)) {
+            return response()->json(['error' => 'Entity not found'], Response::HTTP_NOT_FOUND);
+        }
+        Candidate::find($id)->certificates()->delete();
+        Candidate::destroy($id);
+        return response('',Response::HTTP_NO_CONTENT);
     }
 }

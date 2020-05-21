@@ -51,4 +51,10 @@ class PlansController extends Controller
     {
         return response()->json(Plan::find($id));
     }
+
+    public function delete($id)
+    {
+        Plan::destroy($id);
+        return response('',Response::HTTP_NO_CONTENT);
+    }
 }

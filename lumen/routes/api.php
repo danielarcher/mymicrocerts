@@ -49,7 +49,9 @@ $router->group(['prefix' => 'api'], function (Router $router) {
         $router->group(['middleware' => 'admin'], function(Router $router) {
             $router->get('company', 'CompaniesController@list');
             $router->post('company', 'CompaniesController@create');
+            $router->delete('company/{id}', 'CompaniesController@delete');
             $router->post('plans', 'PlansController@create');
+            $router->delete('plans/{id}', 'PlansController@delete');
             $router->get('candidate', 'CandidateController@list');
         });
         /**
@@ -57,13 +59,16 @@ $router->group(['prefix' => 'api'], function (Router $router) {
          */
         $router->group(['middleware' => 'companyOwner'], function(Router $router) {
             $router->post('exam', 'ExamController@create');
+            $router->delete('exam/{id}', 'ExamController@delete');
             $router->get('company/{id}/candidates', 'CandidateController@listPerCompany');
             $router->post('candidate', 'CandidateController@create');
             $router->get('candidate/{id}', 'CandidateController@findOne');
+            $router->delete('candidate/{id}', 'CandidateController@delete');
             $router->post('plans/{id}/buy', 'PlansController@buy');
             $router->get('question', 'QuestionController@list');
             $router->post('question', 'QuestionController@create');
             $router->get('question/{id}', 'QuestionController@findOne');
+            $router->delete('question/{id}', 'QuestionController@delete');
         });
 
         /**

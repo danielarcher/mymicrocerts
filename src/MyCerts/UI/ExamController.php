@@ -112,4 +112,9 @@ class ExamController extends Controller
         return Auth::user();
     }
 
+    public function delete($id)
+    {
+        Exam::destroy($id);
+        return response('',Response::HTTP_NO_CONTENT);
+    }
 }

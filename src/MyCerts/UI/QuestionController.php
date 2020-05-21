@@ -50,4 +50,14 @@ class QuestionController extends Controller
     {
         return response()->json(Question::find($id));
     }
+
+    public function delete($id)
+    {
+        if (!Question::find($id)) {
+            return response()->json(['error' => 'Entity not found'], Response::HTTP_NOT_FOUND);
+        }
+        Question::find($id)->options()->delete();
+        Question::destroy($id);
+        return response('',Response::HTTP_NO_CONTENT);
+    }
 }

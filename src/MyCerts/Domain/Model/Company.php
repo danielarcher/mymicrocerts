@@ -16,6 +16,18 @@ class Company extends BaseModel
     {
         return $this->hasMany(Contract::class, 'company_id');
     }
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'company_id');
+    }
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class, 'company_id');
+    }
+    public function exams()
+    {
+        return $this->hasMany(Exam::class, 'company_id');
+    }
 
     public function oldestActiveContract(): ?Contract
     {
