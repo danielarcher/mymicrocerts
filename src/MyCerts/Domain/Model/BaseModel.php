@@ -14,7 +14,7 @@ class BaseModel extends Model
 
     public $incrementing = false;
 
-    protected $hidden = ['created_at','updated_at'];
+    protected $hidden = ['created_at','updated_at','deleted_at'];
 
     protected static function boot()
     {
