@@ -22,6 +22,9 @@ class QuestionController extends Controller
 
     public function create(Request $request)
     {
+        if (Auth::user()->isAdmin()) {
+            return response()->json(['error'=>'Only Company owners can create questions'], Response::HTTP_FORBIDDEN);
+        }
         $question = new Question(array_filter([
             'exam_id'     => $request->get('exam_id'),
             'company_id'  => Auth::user()->company_id,
