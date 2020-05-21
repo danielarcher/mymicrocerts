@@ -392,6 +392,35 @@
 					"response": []
 				},
 				{
+					"name": "/api/plans/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/plans/{{plan-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"plans",
+								"{{plan-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/api/company",
 					"request": {
 						"auth": {
@@ -463,6 +492,35 @@
 							"path": [
 								"api",
 								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/company/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/company/{{company-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"company",
+								"{{company-id}}"
 							]
 						}
 					},
@@ -590,6 +648,35 @@
 							"path": [
 								"api",
 								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/exam/{{exam-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam",
+								"{{exam-id}}"
 							]
 						}
 					},
@@ -736,6 +823,35 @@
 					"response": []
 				},
 				{
+					"name": "/api/question",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/question/{{question-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"question",
+								"{{question-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/api/question/{id}",
 					"request": {
 						"auth": {
@@ -765,7 +881,7 @@
 					"response": []
 				},
 				{
-					"name": "/api/question/{id} Copy",
+					"name": "/api/question/{id}",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -777,16 +893,17 @@
 								}
 							]
 						},
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/question",
+							"raw": "{{host}}/api/question/{{question-id}}",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"api",
-								"question"
+								"question",
+								"{{question-id}}"
 							]
 						}
 					},
