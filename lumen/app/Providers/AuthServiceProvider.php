@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\User;
+use Carbon\Carbon;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -33,7 +34,10 @@ class AuthServiceProvider extends ServiceProvider
                 return null;
             }
             $decoded = JWT::decode($token, env('JWT_SECRET'), array('HS256'));
-            return Candidate::with('company')->find($decoded[0]->id);
+            if (Carbon::createFromDate($decoded->valid_until) <= Carbon::now()) {
+                return null;
+            }
+            return Candidate::with('company')->find($decoded->candidate->id);
         });
     }
 }
