@@ -72,6 +72,7 @@ class CreateBaseTables extends Migration
             $table->boolean('visible_external')->default(false);
             $table->boolean('private')->default(false);
             $table->text('access_id')->nullable();
+            $table->text('link')->nullable();
             $table->text('access_password')->nullable();
             $table->softDeletes();
             $table->timestamps();

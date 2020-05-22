@@ -252,7 +252,7 @@
 								"exec": [
 									"if (pm.response.json().attempt) {\r",
 									"    pm.environment.set(\"attempt-id\", pm.response.json().attempt.id);\r",
-									"    pm.environment.set(\"candidate-id\", pm.response.json().candidate_id);\r",
+									"    pm.environment.set(\"candidate-id\", pm.response.json().attempt.candidate_id);\r",
 									"}"
 								],
 								"type": "text/javascript"
@@ -314,7 +314,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"733d41fb-0a81-41f5-a761-df0ced1034b9\"]\n\t\t}\n\t]\n}",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"7b663be8-cbc5-4a84-8d21-1aa23a4396bb\"]\n\t\t}\n\t]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -477,7 +477,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\": \"{{$randomCompanyName}}\",\r\n\t\"country\": \"{{$randomCountryCode}}\",\r\n\t\"email\": \"{{$randomCompanyEmail}}\",\r\n\t\"contact_name\": \"{{$randomName}}\"\r\n}",
+							"raw": "{\r\n\t\"name\": \"{{$randomCompanyName}}\",\r\n\t\"country\": \"{{$randomCountryCode}}\",\r\n\t\"email\": \"{{$randomEmail}}\",\r\n\t\"contact_name\": \"{{$randomNamePrefix}} {{$randomFullName}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1081,7 +1081,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"d16dd3cc-a791-4363-8017-dd18534c9b86\"]\n\t\t}\n\t]\n}",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"0a390f50-2c09-4883-9229-fd52d1f7e92a\"]\n\t\t}\n\t]\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -50,7 +50,7 @@ class ExamController extends Controller
         if ($request->get('visible_external')) {
             $entity->access_id = base64_encode(Uuid::uuid4()->toString());
             $entity->access_password = $request->get('password') ? Hash::make($request->get('password')) : null;
-            #$entity->link = route('external.index', ['id' => $entity->access_id]);
+            $entity->link = route('external.index', ['id' => $entity->access_id]);
             $entity->save();
         }
 

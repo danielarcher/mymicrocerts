@@ -123,14 +123,4 @@ class Certification
         $certificate->save();
         return $certificate;
     }
-
-    private function findAttempt(string $attemptId): Attempt
-    {
-        $attempt = Attempt::findOrFail($attemptId);
-        if (empty($attempt)) {
-            throw new AttemptNotFound();
-        }
-        return $attempt;
-    }
-
 }

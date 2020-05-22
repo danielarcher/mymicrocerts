@@ -5,11 +5,6 @@ namespace MyCerts\Domain\Model;
 
 use Mattiasgeniar\Percentage\Percentage;
 
-/**
- * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam query()
- */
 class Exam extends BaseModel
 {
     protected $table = 'exam';
