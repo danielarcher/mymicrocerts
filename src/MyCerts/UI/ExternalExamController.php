@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use MyCerts\Domain\Certification;
+use MyCerts\Domain\ExamValidator;
 use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\AttemptNotFound;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
@@ -59,7 +60,7 @@ class ExternalExamController extends Controller
             $request->get('email'),
             $exam->company_id
         );
-        $certification = new Certification();
+        $certification = new Certification(new ExamValidator());
         try {
             $response = $certification->startExam($exam->id, $candidate);
         } catch (NoCreditsLeft $e) {
@@ -87,7 +88,7 @@ class ExternalExamController extends Controller
 
         try {
             $this->validateReceivedUser($request);
-            $certification = new Certification();
+            $certification = new Certification(new ExamValidator());
             $response = $certification->finishExam($request->get('attempt_id'), $request->get('answers'));
         } catch (ExamNotFound | AttemptNotFound $e) {
             return response()->json(['error' => $e->getMessage()],Response::HTTP_NOT_FOUND);

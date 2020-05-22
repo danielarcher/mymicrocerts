@@ -3,6 +3,8 @@
 namespace MyCerts\Domain\Model;
 
 
+use Mattiasgeniar\Percentage\Percentage;
+
 /**
  * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|MyCerts\Domain\Model\Exam newQuery()
@@ -76,8 +78,9 @@ class Exam extends BaseModel
         return $return;
     }
 
-    public function checkIsApproved(int $scoreInPercent)
+    public function checkIsApproved(int $score)
     {
+        $scoreInPercent = Percentage::calculate($score, $this->questions()->count());
         return $scoreInPercent >= $this->success_score_in_percent;
     }
 }

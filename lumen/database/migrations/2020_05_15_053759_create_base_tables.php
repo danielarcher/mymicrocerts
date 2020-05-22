@@ -84,6 +84,7 @@ class CreateBaseTables extends Migration
             $table->integer('score_absolute')->nullable();
             $table->timestamp('finished_at')->nullable();
             $table->boolean('approved')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
         Schema::create('certificate', function (Blueprint $table) {

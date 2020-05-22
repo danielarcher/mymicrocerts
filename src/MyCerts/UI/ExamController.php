@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use MyCerts\Domain\Certification;
+use MyCerts\Domain\ExamValidator;
 use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\AttemptNotFound;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
@@ -69,7 +70,7 @@ class ExamController extends Controller
      */
     public function start($id, Request $request)
     {
-        $certification = new Certification();
+        $certification = new Certification(new ExamValidator());
         try {
             $selectedUser = $this->validateReceivedUser($request);
             $response = $certification->startExam($id, $selectedUser);
@@ -93,9 +94,9 @@ class ExamController extends Controller
     public function finish($id, Request $request)
     {
         try {
-            $certification = new Certification();
+            $certification = new Certification(new ExamValidator());
             $response = $certification->finishExam($request->get('attempt_id'), $request->get('answers'));
-        } catch (ExamNotFound | AttemptNotFound $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['error' => $e->getMessage()],Response::HTTP_NOT_FOUND);
         } catch (ExamAlreadyFinished $e) {
             return response()->json(['error' => $e->getMessage()],Response::HTTP_CONFLICT);
