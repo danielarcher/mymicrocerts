@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\User;
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use MyCerts\Domain\Model\Candidate;
@@ -28,12 +29,15 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app['auth']->viaRequest('api', function ($request) {
-            $token = str_replace('Bearer ','',$request->header('Authorization'));
-            if (empty($token)){
-                return null;
-            }
-            $decoded = JWT::decode($token, env('JWT_SECRET'), array('HS256'));
+        $this->app['auth']->viaRequest('api', function (Request $request) {
+            if (!$request->bearerToken())  return null;
+            /**
+             * Decode
+             */
+            $decoded = JWT::decode($request->bearerToken(), env('JWT_SECRET'), array('HS256'));
+            /**
+             * Validate
+             */
             if (Carbon::createFromDate($decoded->valid_until) <= Carbon::now()) {
                 return null;
             }
