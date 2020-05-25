@@ -34,8 +34,23 @@ class ExamController extends Controller
 
     public function create(Request $request)
     {
+        $this->validate($request, [
+            'company_id'                 => 'required|uuid',
+            'title'                      => 'required|string',
+            'description'                => 'required|string',
+            'max_time_in_minutes'        => 'required|int',
+            'success_score_in_percent'   => 'required|int',
+            'max_attempts_per_candidate' => 'int',
+            'visible_internal'           => 'bool',
+            'visible_external'           => 'bool',
+            'private'                    => 'string',
+        ]);
+        $companyId = Auth::user()->company_id;
+        if ($request->get('company_id') && Auth::user()->isAdmin()) {
+            $companyId = $request->get('company_id');
+        }
         $entity = new Exam(array_filter([
-            'company_id'                 => $request->get('company_id'),
+            'company_id'                 => $companyId,
             'title'                      => $request->get('title'),
             'description'                => $request->get('description'),
             'max_time_in_minutes'        => $request->get('max_time_in_minutes'),

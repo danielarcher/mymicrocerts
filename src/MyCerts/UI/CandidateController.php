@@ -27,6 +27,16 @@ class CandidateController extends Controller
 
     public function create(Request $request)
     {
+        $this->validate($request, [
+            'confirm_password' => 'required',
+            'super_user'       => 'bool',
+            'company_id'       => 'required|uuid',
+            'password'         => 'required',
+            'first_name'       => 'required',
+            'last_name'        => 'required',
+            'email'            => 'required|email|unique:candidate'
+        ]);
+
         $user = Auth::user();
         if ($request->get('password') !== $request->get('confirm_password')) {
             return response()->json(['error'=>'password do not match'], Response::HTTP_BAD_REQUEST);
@@ -43,7 +53,6 @@ class CandidateController extends Controller
             'password'   => Hash::make($request->get('password')),
             'first_name' => $request->get('first_name'),
             'last_name'  => $request->get('last_name'),
-            'active'     => $request->get('active'),
             'role'       => $role,
         ]));
         $entity->save();

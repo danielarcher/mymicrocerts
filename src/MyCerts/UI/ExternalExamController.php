@@ -43,9 +43,16 @@ class ExternalExamController extends Controller
      * @throws AccessDeniedToThisExam
      * @throws NoAttemptsLeftForThisExam
      * @throws UserAlreadyHaveThisCertification
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function start($id, Request $request)
     {
+        $this->validate($request, [
+            'password'   => 'required',
+            'first_name' => 'required',
+            'last_name'  => 'required',
+            'email'      => 'required|email|unique:candidate'
+        ]);
         try {
             $exam = Exam::where(['access_id' => $id])->firstOrFail();
         } catch (NotFoundHttpException $e) {

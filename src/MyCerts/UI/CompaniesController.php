@@ -16,6 +16,13 @@ class CompaniesController extends Controller
 
     public function create(Request $request)
     {
+        $this->validate($request, [
+            'name'         => 'required',
+            'country'      => 'required',
+            'email'        => 'required|email',
+            'contact_name' => 'required',
+        ]);
+
         $company = new Company([
             'name'     => $request->get('name'),
             'country' => $request->get('country'),
