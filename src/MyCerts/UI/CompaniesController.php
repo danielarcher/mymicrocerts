@@ -47,7 +47,6 @@ class CompaniesController extends Controller
         foreach (Company::find($id)->questions()->get() as $question) {
             $question->options()->delete();
         }
-        #Company::find($id)->questions()->options()->delete();
         Company::find($id)->questions()->delete();
         Company::find($id)->exams()->delete();
         Company::find($id)->candidates()->delete();
