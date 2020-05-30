@@ -23,13 +23,15 @@ use MyCerts\Domain\Model\Attempt;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Certificate;
 use MyCerts\Domain\Model\Exam;
+use MyCerts\Domain\Transformers\ExamTransformer;
 use Ramsey\Uuid\Uuid;
 
 class ExamController extends Controller
 {
     public function list(Request $request)
     {
-        return response()->json(Exam::where('company_id', Auth::user()->company_id)->get());
+        $collection = Exam::where('company_id', Auth::user()->company_id)->get();
+        return fractal($collection, new ExamTransformer())->withResourceName('Exam')->toArray();
     }
 
     public function create(Request $request)

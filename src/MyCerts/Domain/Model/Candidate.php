@@ -5,9 +5,23 @@ namespace MyCerts\Domain\Model;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Lumen\Auth\Authorizable;
 use MyCerts\Domain\Roles;
 
+/**
+ * @property Certificate company_id
+ * @property string      email
+ * @property string      password
+ * @property string      first_name
+ * @property string      last_name
+ * @property bool        active
+ * @property string      role
+ * @property bool        verified
+ * @property HasMany     certificates
+ * @property BelongsTo     company
+ */
 class Candidate extends BaseModel implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;

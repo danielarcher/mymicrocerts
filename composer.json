@@ -9,7 +9,8 @@
         "ext-json": "*",
         "firebase/php-jwt": "^5.2",
         "laravel/lumen-framework": "^7.0",
-        "mattiasgeniar/php-percentages": "^1.0"
+        "mattiasgeniar/php-percentages": "^1.0",
+        "spatie/laravel-fractal": "^5.7"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",
