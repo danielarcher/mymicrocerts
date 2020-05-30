@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use League\Fractal\Serializer\JsonApiSerializer;
 use MyCerts\Domain\Certification;
 use MyCerts\Domain\ExamValidator;
 use MyCerts\Domain\Exception\AccessDeniedToThisExam;
@@ -30,8 +31,8 @@ class ExamController extends Controller
 {
     public function list(Request $request)
     {
-        $collection = Exam::where('company_id', Auth::user()->company_id)->get();
-        return fractal($collection, new ExamTransformer())->withResourceName('Exam')->toArray();
+        $collection = Exam::where('company_id', Auth::user()->company_id)->paginate();
+        return fractal($collection, new ExamTransformer())->withResourceName('exam')->toArray();
     }
 
     public function create(Request $request)

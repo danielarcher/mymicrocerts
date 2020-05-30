@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @property string id
+ * @property string created_at
+ * @property string updated_at
+ **/
 class BaseModel extends Model
 {
     use SoftDeletes;

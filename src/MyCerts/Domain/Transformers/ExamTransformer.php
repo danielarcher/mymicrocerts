@@ -14,8 +14,13 @@ class ExamTransformer extends TransformerAbstract
     public function transform(Exam $exam)
     {
         return [
+            'id'       => $exam->id,
             'title'       => $exam->title,
             'description' => $exam->description,
+            'meta' => [
+                'created_at' => $exam->created_at,
+                'updated_at' => $exam->updated_at
+            ]
         ];
     }
 }

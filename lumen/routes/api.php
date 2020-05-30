@@ -20,19 +20,21 @@ $router->get('/', function () use ($router) {
     return 'Welcome to MyMicroCerts ' . config('mycerts.version');
 });
 
-/**
- * Login Url
- */
-$router->get('/login', 'LoginController@login');
+$router->group(['middleware' => 'jsonApiContentType'], function (Router $router) {
+    /**
+     * Login Url
+     */
+    $router->get('/login', 'LoginController@login');
 
-/**
- * External exam with guest user
- */
-$router->get('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
-$router->post('link/exam/{id}/start', ['as' => 'external.start', 'uses' => 'ExternalExamController@start']);
-$router->post('link/exam/{id}/finish', ['as' => 'external.finish', 'uses' => 'ExternalExamController@finish']);
+    /**
+     * External exam with guest user
+     */
+    $router->get('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
+    $router->post('link/exam/{id}/start', ['as' => 'external.start', 'uses' => 'ExternalExamController@start']);
+    $router->post('link/exam/{id}/finish', ['as' => 'external.finish', 'uses' => 'ExternalExamController@finish']);
+});
 
-$router->group(['prefix' => 'api'], function (Router $router) {
+$router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], function (Router $router) {
     /**
      * No Authentication needed
      */

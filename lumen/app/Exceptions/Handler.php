@@ -49,6 +49,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        #@TODO handle previous exceptions
+
+        return response()->json([
+            'errors' => [
+                [
+                    'status' => $exception->getCode(),
+                    'code' => $exception->getCode(),
+                    'title' => $exception->getMessage()
+                ]
+            ]
+        ], $exception->getCode());
     }
 }

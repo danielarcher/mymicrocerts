@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\CompanyOwnerOnly;
+use App\Http\Middleware\JsonApiContentType;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -63,6 +64,7 @@ $app->singleton(
 */
 $app->configure('app');
 $app->configure('mycerts');
+$app->configure('fractal');
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +82,7 @@ $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
     'admin' => AdminOnly::class,
     'companyOwner' => CompanyOwnerOnly::class,
+    'jsonApiContentType' => JsonApiContentType::class,
 ]);
 
 /*
