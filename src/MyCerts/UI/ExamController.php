@@ -25,29 +25,18 @@ use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Certificate;
 use MyCerts\Domain\Model\Exam;
 use MyCerts\Domain\Transformers\ExamTransformer;
+use MyCerts\UI\Request\ExamCreateRequest;
 use Ramsey\Uuid\Uuid;
 
 class ExamController extends Controller
 {
     public function list(Request $request)
     {
-        $collection = Exam::where('company_id', Auth::user()->company_id)->paginate();
-        return fractal($collection, new ExamTransformer())->withResourceName('exam')->toArray();
+        return response()->json(Exam::where('company_id', Auth::user()->company_id)->get());
     }
 
-    public function create(Request $request)
+    public function create(ExamCreateRequest $request)
     {
-        $this->validate($request, [
-            'company_id'                 => 'required|uuid',
-            'title'                      => 'required|string',
-            'description'                => 'required|string',
-            'max_time_in_minutes'        => 'required|int',
-            'success_score_in_percent'   => 'required|int',
-            'max_attempts_per_candidate' => 'int',
-            'visible_internal'           => 'bool',
-            'visible_external'           => 'bool',
-            'private'                    => 'string',
-        ]);
         $companyId = Auth::user()->company_id;
         if ($request->get('company_id') && Auth::user()->isAdmin()) {
             $companyId = $request->get('company_id');
