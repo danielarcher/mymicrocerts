@@ -1,24 +1,26 @@
-# Lumen PHP Framework
+# My Micro certs
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://poser.pugx.org/laravel/lumen-framework/d/total.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/lumen-framework/v/stable.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://poser.pugx.org/laravel/lumen-framework/license.svg)](https://packagist.org/packages/laravel/lumen-framework)
-
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
-
-## Official Documentation
-
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
-
-## Contributing
-
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+next release:
+- adicionar categorias (id/empresa/nome)
+- adicionar vinculo entre categorias e perguntas, uma pergunta pode ter apenas 1 categoria
+- remover vinculo pergunta -> exame
+- alterar POST /exam para receber array de questions, ou array de categorias
+    - neste caso, caso sejam utilizados os dois, o exame pode conter perguntas fixas e aleatorias, jamais repetindo as perguntas
+    - no momento de criacao do exame nao é verificado a validade da combinaçao escolhida
+    - cada categoria deve conter também o numero de questoes necessário
+    
+exemple 
+```json
+{
+	"questions": [
+		"804644557-804644557-804644557",
+		"274313233-274313233-274313233",
+		"134600426-134600426-134600426"
+	],
+	"categories": [
+		{"id": "1722258350-1722258350-1722258350", "quantity": 8},
+		{"id": "1056008808-1056008808-1056008808", "quantity": 6},
+		{"id": "2056308422-2056308422-2056308422", "quantity": 3}
+	]
+}
+```
