@@ -13,16 +13,17 @@ class PlansController extends Controller
 {
     public function list()
     {
-        return response()->json(Plan::where('active', true)->get());
+        return response()->json(Plan::where('active', true)->orderBy('price','asc')->get());
     }
 
     public function create(Request $request)
     {
         $plan = new Plan([
-            'name'            => $request->get('name'),
-            'description'     => $request->get('description'),
-            'price'           => $request->get('price'),
-            'credits'       => $request->get('credits'),
+            'name'                  => $request->get('name'),
+            'description'           => $request->get('description'),
+            'price'                 => $request->get('price'),
+            'credits'     => $request->get('credits'),
+            'api_requests_per_hour' => $request->get('api_requests_per_hour'),
         ]);
         $plan->save();
 
@@ -31,7 +32,7 @@ class PlansController extends Controller
 
     public function buy($id, Request $request)
     {
-        $plan = Plan::find($id);
+        $plan     = Plan::find($id);
         $contract = new Contract([
             'name'          => $plan->name,
             'description'   => $plan->description,
@@ -55,6 +56,6 @@ class PlansController extends Controller
     public function delete($id)
     {
         Plan::destroy($id);
-        return response('',Response::HTTP_NO_CONTENT);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }

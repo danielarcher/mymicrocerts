@@ -6,6 +6,7 @@ namespace MyCerts\Domain\Model;
  * @property int|mixed credits_used
  * @property mixed     credits_total
  * @property bool      active
+ * @property string     company_id
  */
 class Contract extends BaseModel
 {

@@ -19,8 +19,10 @@ class CreateBaseTables extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->string('currency');
             $table->double('price');
             $table->integer('credits');
+            $table->integer('api_requests_per_hour');
             $table->boolean('active')->default(true);
             $table->softDeletes();
             $table->timestamps();

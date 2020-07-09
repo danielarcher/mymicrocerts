@@ -40,6 +40,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
      */
     $router->post('guest-candidate','CandidateController@createGuest');
     $router->get('plans', 'PlansController@list');
+    $router->get('plans/{id}', 'PlansController@findOne');
 
     /**
      * Authentication Required
