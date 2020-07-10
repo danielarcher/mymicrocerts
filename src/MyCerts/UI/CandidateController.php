@@ -14,10 +14,9 @@ class CandidateController extends Controller
 {
     public function list()
     {
-        if (Auth::user()->isAdmin()) {
-            return response()->json(Candidate::all()->makeVisible('company_id'));
-        }
-        return response()->json(Candidate::where(['company_id'=>Auth::user()]));
+        $nonAdminRestriction = Auth::user()->isAdmin() ? [] : ['company_id'=>Auth::user()];
+
+        return response()->json(Candidate::where($nonAdminRestriction)->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
     public function listPerCompany($id)

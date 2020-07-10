@@ -48,13 +48,6 @@ class CreateBaseTables extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
-        Schema::create('category', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('company_id')->nullable();
-            $table->string('name');
-            $table->softDeletes();
-            $table->timestamps();
-        });
         Schema::create('candidate', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('company_id')->nullable();

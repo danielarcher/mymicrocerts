@@ -38,7 +38,7 @@ class Candidate extends BaseModel implements AuthenticatableContract, Authorizab
         'role',
     ];
 
-    protected $hidden = ['created_at','updated_at', 'active', 'password', 'role', 'verified', 'company_id'];
+    protected $hidden = ['created_at','updated_at', 'active', 'password', 'role', 'verified', 'deleted_at'];
 
     public function company()
     {
