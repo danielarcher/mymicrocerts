@@ -22,7 +22,7 @@ class PlansController extends Controller
             'name'                  => $request->get('name'),
             'description'           => $request->get('description'),
             'price'                 => $request->get('price'),
-            'credits'     => $request->get('credits'),
+            'credits'               => $request->get('credits'),
             'api_requests_per_hour' => $request->get('api_requests_per_hour'),
         ]);
         $plan->save();
@@ -44,7 +44,6 @@ class PlansController extends Controller
             $contract->company_id = $request->get('company_id');
         }
         $contract->save();
-
         return response()->json($contract, Response::HTTP_CREATED);
     }
 
