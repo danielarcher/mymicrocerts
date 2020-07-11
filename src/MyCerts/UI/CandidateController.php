@@ -19,11 +19,6 @@ class CandidateController extends Controller
         return response()->json(Candidate::where($nonAdminRestriction)->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
-    public function listPerCompany($id)
-    {
-        return response()->json(Candidate::where('company_id', $id)->paginate());
-    }
-
     public function create(Request $request)
     {
         $this->validate($request, [

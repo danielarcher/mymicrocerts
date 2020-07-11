@@ -64,8 +64,6 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
             $router->post('exam', 'ExamController@create');
             $router->delete('exam/{id}', 'ExamController@delete');
 
-            #$router->get('company/{id}/candidates', 'CandidateController@listPerCompany');
-
             $router->get('candidate', 'CandidateController@list');
             $router->post('candidate', 'CandidateController@create');
             $router->get('candidate/{id}', 'CandidateController@findOne');

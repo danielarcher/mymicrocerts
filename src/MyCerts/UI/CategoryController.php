@@ -49,6 +49,6 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Entity not found'], Response::HTTP_NOT_FOUND);
         }
         Category::destroy($id);
-        return response('',Response::HTTP_NO_CONTENT);
+        return response(null,Response::HTTP_NO_CONTENT);
     }
 }

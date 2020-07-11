@@ -108,6 +108,18 @@
 				},
 				{
 					"name": "/api/plans",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5038970f-1bb4-4098-a5ba-896fba85d000",
+								"exec": [
+									"pm.environment.set(\"plan-id\", pm.response.json().data[1].id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -190,34 +202,6 @@
 							"path": [
 								"api",
 								"guest-candidate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "/api/candidate",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{host}}/api/candidate",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"api",
-								"candidate"
 							]
 						}
 					},
@@ -343,6 +327,34 @@
 			"name": "Admin Only",
 			"item": [
 				{
+					"name": "/api/candidate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/candidate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"candidate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/api/plans",
 					"event": [
 						{
@@ -371,7 +383,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\": \"{{$randomProductAdjective}} Plan\",\r\n\t\"description\": \"{{$randomLoremSentence}}\",\r\n\t\"price\": {{$randomPrice}},\r\n\t\"credits\": {{$randomInt}}\r\n}",
+							"raw": "{\r\n\t\"name\": \"{{$randomProductAdjective}} Plan\",\r\n\t\"description\": \"{{$randomLoremSentence}}\",\r\n\t\"price\": {{$randomPrice}},\r\n\t\"credits\": {{$randomInt}},\r\n\t\"api_requests_per_hour\": {{$randomInt}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -572,7 +584,7 @@
 					"response": []
 				},
 				{
-					"name": "/api/company/{id}/candidates",
+					"name": "/api/candidate",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -587,15 +599,145 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/company/{{company-id}}/candidates",
+							"raw": "{{host}}/api/candidate",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"api",
-								"company",
-								"{{company-id}}",
-								"candidates"
+								"candidate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cd139477-2d25-4ee5-aeb3-7998f9fffbe2",
+								"exec": [
+									"pm.environment.set(\"category-id\", pm.response.json().id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"name\": \"{{$randomProductMaterial}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/category",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b0c45280-089c-46a6-9303-333ed3768fb5",
+								"exec": [
+									"pm.environment.set(\"category-id\", pm.response.json().data[0].id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"name\": \"{{$randomProductMaterial}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/category",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/category/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/category/{{category-id}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"{{category-id}}"
 							]
 						}
 					},
@@ -633,7 +775,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\"\r\n}",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\",\r\n\t\"max_time_in_minutes\": {{$randomInt}},\r\n\t\"success_score_in_percent\": 80\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
