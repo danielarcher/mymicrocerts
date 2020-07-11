@@ -13,7 +13,7 @@ class PlansController extends Controller
 {
     public function list()
     {
-        return response()->json(Plan::where('active', true)->orderBy('price','asc')->get());
+        return response()->json(Plan::where('active', true)->orderBy('price','asc')->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
     public function create(Request $request)

@@ -11,7 +11,7 @@ class CompaniesController extends Controller
 {
     public function list()
     {
-        return response()->json(Company::with('contracts')->paginate(2));
+        return response()->json(Company::with('contracts')->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
     public function create(Request $request)
