@@ -15,4 +15,9 @@ class Category extends BaseModel
         'updated_at',
         'company_id',
     ];
+
+    public function questions()
+    {
+        return $this->belongsToMany(Question::class, 'question_category');
+    }
 }

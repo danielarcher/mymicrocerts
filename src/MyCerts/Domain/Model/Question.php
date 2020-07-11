@@ -9,7 +9,6 @@ class Question extends BaseModel
     protected $table = 'question';
 
     protected $fillable = [
-        'exam_id',
         'number',
         'description',
         'company_id',
@@ -22,9 +21,9 @@ class Question extends BaseModel
         return $this->hasMany(Option::class, 'question_id');
     }
 
-    public function exam()
+    public function categories()
     {
-        return $this->belongsTo(Exam::class, 'exam_id');
+        return $this->belongsToMany(Category::class, 'question_category');
     }
 
     public function correctOptionsOnly(): array

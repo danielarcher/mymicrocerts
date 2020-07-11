@@ -100,7 +100,6 @@ class CreateBaseTables extends Migration
         });
         Schema::create('question', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('exam_id');
             $table->uuid('company_id');
             $table->integer('number')->nullable();
             $table->text('description');

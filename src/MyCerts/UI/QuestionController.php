@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use MyCerts\Domain\Model\Category;
 use MyCerts\Domain\Model\Option;
 use MyCerts\Domain\Model\Question;
 use Ramsey\Uuid\Uuid;
@@ -22,28 +23,33 @@ class QuestionController extends Controller
 
     public function create(Request $request)
     {
-        if (Auth::user()->isAdmin()) {
-            return response()->json(['error'=>'Only Company owners can create questions'], Response::HTTP_FORBIDDEN);
+        try {
+            if (Auth::user()->isAdmin()) {
+                return response()->json(['error' => 'Only Company owners can create questions'],
+                    Response::HTTP_FORBIDDEN);
+            }
+            $question = new Question(array_filter([
+                'company_id'  => Auth::user()->company_id,
+                'number'      => $request->get('number'),
+                'description' => $request->get('description'),
+            ]));
+
+            $question->save();
+            $question->categories()->sync($request->get('categories'));
+
+            $options = $request->get('options');
+            array_walk($options, function (&$answer) use ($question) {
+                $option = new Option([
+                    'question_id' => $question->id,
+                    'text'        => $answer['text'],
+                    'correct'     => $answer['correct'] ?? false,
+                ]);
+                $option->save();
+            });
+            return response()->json($question, Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return response($e->getMessage());
         }
-        $question = new Question(array_filter([
-            'exam_id'     => $request->get('exam_id'),
-            'company_id'  => Auth::user()->company_id,
-            'number'      => $request->get('number'),
-            'description' => $request->get('description'),
-        ]));
-        $question->save();
-
-        $options = $request->get('options');
-        array_walk($options, function(&$answer) use ($question) {
-            $option = new Option([
-                'question_id' => $question->id,
-                'text' => $answer['text'],
-                'correct' => $answer['correct'] ?? false,
-            ]);
-            $option->save();
-        });
-
-        return response()->json($question, Response::HTTP_CREATED);
     }
 
     public function findOne($id)
