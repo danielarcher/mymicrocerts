@@ -16,5 +16,6 @@ class Option extends BaseModel
         'created_at',
         'updated_at',
         'question_id',
+        'deleted_at',
     ];
 }

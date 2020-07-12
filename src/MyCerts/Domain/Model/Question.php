@@ -14,11 +14,16 @@ class Question extends BaseModel
         'company_id',
     ];
 
-    protected $hidden = ['created_at','updated_at', 'company_id'];
+    protected $hidden = ['created_at','updated_at', 'company_id', 'deleted_at', 'pivot'];
 
     public function options()
     {
         return $this->hasMany(Option::class, 'question_id');
+    }
+
+    public function correctOptions()
+    {
+        return $this->hasMany(Option::class, 'question_id')->where('correct', true);
     }
 
     public function categories()
@@ -26,19 +31,16 @@ class Question extends BaseModel
         return $this->belongsToMany(Category::class, 'question_category');
     }
 
-    public function correctOptionsOnly(): array
-    {
-        /** @var Collection $options */
-        $options = $this->options;
-        return array_filter($options->all(), function($option) {
-            return $option->correct;
-        });
-    }
-
     public function correctOptionsGrouped()
     {
         return array_map(function($option) {
-            return $option->id;
-        }, $this->correctOptionsOnly());
+            return $option['id'];
+        }, $this->correctOptions()->get()->toArray());
+    }
+
+    public function isCorrectAnswer(array $selectedOptions): bool
+    {
+        sort($selectedOptions);
+        return $selectedOptions == $this->correctOptionsGrouped();
     }
 }

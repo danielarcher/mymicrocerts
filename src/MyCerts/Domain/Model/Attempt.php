@@ -24,4 +24,33 @@ class Attempt extends BaseModel
     {
         return $this->belongsTo(Candidate::class, 'candidate_id');
     }
+
+    public function drawnQuestions()
+    {
+        return $this->belongsToMany(Question::class, 'attempt_drawn_questions');
+    }
+
+    public function calculateScore(array $answers): int
+    {
+        $score = 0;
+        $answers = $this->transformAnswersInAssociativeArray($answers);
+
+        foreach ($this->drawnQuestions()->get() as $question) {
+            /** @var Question $question */
+            if ($question->isCorrectAnswer($answers[$question->id] ?? [])) {
+                $score++;
+            }
+        }
+        return $score;
+    }
+
+    protected function transformAnswersInAssociativeArray($answers): array
+    {
+        $return = null;
+        foreach ($answers as $answer) {
+            if (empty($answer['question_id'])) continue;
+            $return[$answer['question_id']] = $answer['selected_option_ids'];
+        }
+        return $return;
+    }
 }

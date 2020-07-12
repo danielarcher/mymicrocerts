@@ -67,8 +67,6 @@ class ExamController extends Controller
                 $exam->questionsPerCategory()->sync($request->get('questions_per_categories'));
             }
 
-            #dd($exam->numberOfQuestions());
-
             return response()->json($exam, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return response($e->getMessage());
@@ -107,7 +105,7 @@ class ExamController extends Controller
             return response()->json(['error' => 'Exam not found'],Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json($response, Response::HTTP_CREATED);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -127,7 +125,7 @@ class ExamController extends Controller
             return response()->json(['error' => $e->getMessage()],Response::HTTP_CONFLICT);
         }
 
-        return response()->json($response, Response::HTTP_CREATED);
+        return response()->json($response, Response::HTTP_OK);
     }
 
     private function validateReceivedUser(Request $request)

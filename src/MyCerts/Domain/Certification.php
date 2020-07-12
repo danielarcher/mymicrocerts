@@ -13,9 +13,11 @@ use MyCerts\Domain\Exception\NoCreditsLeft;
 use MyCerts\Domain\Exception\UserAlreadyHaveThisCertification;
 use MyCerts\Domain\Model\Attempt;
 use MyCerts\Domain\Model\Candidate;
+use MyCerts\Domain\Model\Category;
 use MyCerts\Domain\Model\Certificate;
 use MyCerts\Domain\Model\Company;
 use MyCerts\Domain\Model\Exam;
+use MyCerts\Domain\Model\Question;
 
 class Certification
 {
@@ -53,20 +55,49 @@ class Certification
             'candidate_id' => $candidate->id,
         ]);
         $attempt->save();
+        $attempt->drawnQuestions()->sync($this->drawQuestionsForExam($exam));
 
         /**
          * Withdraw one credit
          */
         $exam->company->useCredit();
-
-        $exam = Exam::with('questions.options')->findOrFail($attempt->exam_id);
-
         return [
-            'attempt' => $attempt,
-            'exam' => $exam
+            'attempt'   => $attempt,
+            'exam'      => $exam,
+            'questions' => $attempt->drawnQuestions()->with('options')->get()
         ];
     }
 
+    private function drawQuestionsForExam(Exam $exam): array
+    {
+        $categoryQuestions = $this->drawCategoryQuestions($exam);
+        $fixedQuestions    = $this->retrieveFixedQuestionIdsOnly($exam);
+        return array_merge($categoryQuestions, $fixedQuestions);
+    }
+
+    private function drawCategoryQuestions(Exam $exam): array
+    {
+        $drawnQuestions = [];
+        foreach ($exam->questionsPerCategory()->get() as $category) {
+            $drawnQuestions = array_merge($drawnQuestions, $this->drawQuestionsForOneCategory($category));
+        }
+        return $drawnQuestions;
+    }
+
+    private function drawQuestionsForOneCategory(Category $category): array
+    {
+        $quantity = $category->pivot->quantity_of_questions;
+        return array_map(function ($question) {
+            return $question['id'];
+        }, $category->questions()->inRandomOrder()->limit($quantity)->get()->toArray());
+    }
+
+    private function retrieveFixedQuestionIdsOnly(Exam $exam): array
+    {
+        return array_map(function($question) {
+            return $question['id'];
+        }, $exam->fixedQuestions()->get()->toArray());
+    }
 
     /**
      * @param string $attemptId
@@ -76,17 +107,19 @@ class Certification
      */
     public function finishExam(string $attemptId, array $answers): array
     {
+        /** @var Attempt $attempt */
         $attempt = Attempt::findOrFail($attemptId);
-        $exam = Exam::with('questions')->findOrFail($attempt->exam_id);
+        /** @var Exam $exam */
+        $exam     = Exam::findOrFail($attempt->exam_id);
 
         $this->validator->assertExamCanBeFinished($exam, $attempt);
 
-        $score   = $exam->calculateScore($answers);
-        $attempt = $this->saveAttempt($attempt, $score, $exam);
-
+        $score    = $attempt->calculateScore($answers);
+        $attempt  = $this->saveAttempt($attempt, $score, $exam);
         $response = ['attempt' => $attempt];
+
         if ($attempt->approved) {
-            $response['certificate'] =  $this->generateCertificate($attempt);
+            $response['certificate'] = $this->generateCertificate($attempt);
         }
         return $response;
     }
@@ -101,7 +134,7 @@ class Certification
     public function saveAttempt(Attempt $attempt, int $score, Exam $exam): Attempt
     {
         $attempt->score_absolute   = $score;
-        $attempt->score_in_percent = Percentage::calculate($score, $exam->questions()->count());
+        $attempt->score_in_percent = Percentage::calculate($score, $exam->numberOfQuestions());
         $attempt->finished_at      = new \DateTimeImmutable();
         $attempt->approved         = $exam->checkIsApproved($score);
         $attempt->save();

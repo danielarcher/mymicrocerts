@@ -59,6 +59,6 @@ class Handler extends ExceptionHandler
                     'title' => $exception->getMessage()
                 ]
             ]
-        ], $exception->getCode());
+        ]);
     }
 }
