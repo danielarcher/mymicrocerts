@@ -45,9 +45,23 @@ class Exam extends BaseModel
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function questions()
+    public function fixedQuestions()
     {
-        return $this->hasMany(Question::class, 'exam_id', 'id');
+        return $this->belongsToMany(Question::class, 'exam_question');
+    }
+
+    public function questionsPerCategory()
+    {
+        return $this->belongsToMany(Category::class, 'exam_category')->withPivot('quantity_of_questions');
+    }
+
+    public function numberOfQuestions()
+    {
+        $sumFromCategories = array_sum(array_map(function ($category) {
+            return $category['pivot']['quantity_of_questions'];
+        }, $this->questionsPerCategory()->get()->toArray()));
+
+        return $this->fixedQuestions()->count() + $sumFromCategories;
     }
 
     public function questionsAsAssociativeArray()

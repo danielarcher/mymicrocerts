@@ -35,38 +35,56 @@ class ExamController extends Controller
         return response()->json(Exam::where('company_id', Auth::user()->company_id)->get());
     }
 
-    public function create(ExamCreateRequest $request)
+    public function create(Request $request)
     {
-        $companyId = Auth::user()->company_id;
-        if ($request->get('company_id') && Auth::user()->isAdmin()) {
-            $companyId = $request->get('company_id');
-        }
-        $entity = new Exam(array_filter([
-            'company_id'                 => $companyId,
-            'title'                      => $request->get('title'),
-            'description'                => $request->get('description'),
-            'max_time_in_minutes'        => $request->get('max_time_in_minutes'),
-            'max_attempts_per_candidate' => $request->get('max_attempts_per_candidate'),
-            'success_score_in_percent'   => $request->get('success_score_in_percent'),
-            'visible_internal'           => $request->get('visible_internal'),
-            'visible_external'           => $request->get('visible_external'),
-            'private'                    => $request->get('private'),
-        ]));
-        $entity->save();
+        try {
+            $company_id = Auth::user()->isAdmin() ? $request->get('company_id', Auth::user()->company_id) : Auth::user()->company_id;
 
-        if ($request->get('visible_external')) {
-            $entity->access_id = base64_encode(Uuid::uuid4()->toString());
-            $entity->access_password = $request->get('password') ? Hash::make($request->get('password')) : null;
-            $entity->link = route('external.index', ['id' => $entity->access_id]);
-            $entity->save();
-        }
+            $exam = new Exam(array_filter([
+                'company_id'                 => $company_id,
+                'title'                      => $request->get('title'),
+                'description'                => $request->get('description'),
+                'max_time_in_minutes'        => $request->get('max_time_in_minutes'),
+                'max_attempts_per_candidate' => $request->get('max_attempts_per_candidate'),
+                'success_score_in_percent'   => $request->get('success_score_in_percent'),
+                'visible_internal'           => $request->get('visible_internal'),
+                'visible_external'           => $request->get('visible_external'),
+                'private'                    => $request->get('private'),
+            ]));
+            $exam->save();
 
-        return response()->json($entity, Response::HTTP_CREATED);
+            if ($request->get('visible_external')) {
+                $exam->access_id       = base64_encode(Uuid::uuid4()->toString());
+                $exam->access_password = $request->get('password') ? Hash::make($request->get('password')) : null;
+                $exam->link            = route('external.index', ['id' => $exam->access_id]);
+                $exam->save();
+            }
+
+            if ($request->get('fixed_questions')) {
+                $exam->fixedQuestions()->sync($request->get('fixed_questions'));
+            }
+            if ($request->get('questions_per_categories')) {
+                $exam->questionsPerCategory()->sync($request->get('questions_per_categories'));
+            }
+
+            #dd($exam->numberOfQuestions());
+
+            return response()->json($exam, Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            return response($e->getMessage());
+        }
     }
 
     public function findOne($id)
     {
-        return response()->json(Exam::find($id));
+        /** @var Exam $exam */
+        try {
+            $exam = Exam::with('questionsPerCategory', 'fixedQuestions')->find($id);
+        } catch (Exception $e) {
+            return response($e);
+        }
+        $exam->numberOfQuestions = $exam->numberOfQuestions();
+        return response()->json($exam);
     }
 
     /**
