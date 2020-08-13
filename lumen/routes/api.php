@@ -13,23 +13,24 @@
 |
 */
 
-use Illuminate\Support\Facades\Route;
 use Laravel\Lumen\Routing\Router;
 
-$router->get('/', function () use ($router) {
-    return 'Welcome to MyMicroCerts ' . config('mycerts.version');
+$router->get('/home', function () use ($router) {
+    return response()->json([
+        'message' => 'Welcome to MyMicroCerts ' . config('mycerts.version')
+    ]);
 });
 
 $router->group(['middleware' => 'jsonApiContentType'], function (Router $router) {
     /**
      * Login Url
      */
-    $router->get('/login', 'LoginController@login');
+    $router->post('/login', 'LoginController@login');
 
     /**
      * External exam with guest user
      */
-    $router->get('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
+    $router->post('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
     $router->post('link/exam/{id}/start', ['as' => 'external.start', 'uses' => 'ExternalExamController@start']);
     $router->post('link/exam/{id}/finish', ['as' => 'external.finish', 'uses' => 'ExternalExamController@finish']);
 });
@@ -38,18 +39,18 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
     /**
      * No Authentication needed
      */
-    $router->post('guest-candidate','CandidateController@createGuest');
+    $router->post('guest-candidate', 'CandidateController@createGuest');
     $router->get('plans', 'PlansController@list');
     $router->get('plans/{id}', 'PlansController@findOne');
 
     /**
      * Authentication Required
      */
-    $router->group(['middleware' => 'auth'], function(Router $router) {
+    $router->group(['middleware' => 'auth'], function (Router $router) {
         /**
          * Admin only
          */
-        $router->group(['middleware' => 'admin'], function(Router $router) {
+        $router->group(['middleware' => 'admin'], function (Router $router) {
             $router->get('company', 'CompaniesController@list');
             $router->post('company', 'CompaniesController@create');
             $router->delete('company/{id}', 'CompaniesController@delete');
@@ -60,7 +61,7 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
         /**
          * Company Owner only
          */
-        $router->group(['middleware' => 'companyOwner'], function(Router $router) {
+        $router->group(['middleware' => 'companyOwner'], function (Router $router) {
             $router->post('exam', 'ExamController@create');
             $router->delete('exam/{id}', 'ExamController@delete');
 
@@ -93,7 +94,6 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
         $router->get('exam/{id}', 'ExamController@findOne');
         $router->post('exam/{id}/start', 'ExamController@start');
         $router->post('exam/{id}/finish', 'ExamController@finish');
-
 
     });
 });

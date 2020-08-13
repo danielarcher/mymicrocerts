@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use League\Fractal\Serializer\JsonApiSerializer;
 use MyCerts\Domain\Certification;
 use MyCerts\Domain\ExamValidator;
@@ -37,6 +38,18 @@ class ExamController extends Controller
 
     public function create(Request $request)
     {
+        $this->validate($request, [
+            'company_id'                 => 'required|uuid',
+            'title'                      => 'required|unique:exam|string',
+            'description'                => 'required|string',
+            'max_time_in_minutes'        => 'required|int',
+            'success_score_in_percent'   => 'required|int',
+            'max_attempts_per_candidate' => 'int',
+            'visible_internal'           => 'bool',
+            'visible_external'           => 'bool',
+            'private'                    => 'string',
+        ]);
+
         try {
             $company_id = Auth::user()->isAdmin() ? $request->get('company_id', Auth::user()->company_id) : Auth::user()->company_id;
 

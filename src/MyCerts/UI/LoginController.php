@@ -18,6 +18,7 @@ class LoginController extends Controller
             'email'         => 'required|email',
             'password'      => 'required',
         ]);
+
         /**
          * Validate user
          */
@@ -25,12 +26,14 @@ class LoginController extends Controller
         if (!$candidate) {
             return response()->json(['error' => 'unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
+
         /**
          * Validate password hash
          */
         if (! Hash::check($request->get('password'), $candidate->password)) {
             return response()->json(['error' => 'unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
+
         /**
          * Generate token
          */
@@ -39,6 +42,7 @@ class LoginController extends Controller
             'valid_until' => Carbon::now()->addMinutes(config('mycerts.session_lifetime_in_minutes'))
         ];
         $jwt = JWT::encode($tokenData, env('JWT_SECRET'),'HS256', Hash::make($candidate->password));
+
         return response()->json(['token' => $jwt], Response::HTTP_OK);
     }
 }
