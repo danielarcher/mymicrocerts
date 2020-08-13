@@ -10,7 +10,7 @@ class Company extends BaseModel
 {
     protected $table = 'company';
 
-    protected $fillable = ['name','country'];
+    protected $fillable = ['name','country', 'email', 'contact_name'];
 
     protected $hidden = ['created_at','updated_at','deleted_at','email','contact_name'];
 

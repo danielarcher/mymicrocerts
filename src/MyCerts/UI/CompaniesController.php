@@ -9,12 +9,12 @@ use MyCerts\Domain\Model\Company;
 
 class CompaniesController extends Controller
 {
-    public function list()
+    public function list ()
     {
         return response()->json(Company::with('contracts')->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
-    public function create(Request $request)
+    public function create (Request $request)
     {
         $this->validate($request, [
             'name'         => 'required',
@@ -24,22 +24,22 @@ class CompaniesController extends Controller
         ]);
 
         $company = new Company([
-            'name'     => $request->get('name'),
-            'country' => $request->get('country'),
-            'email' => $request->get('email'),
-            'contact_name' => $request->get('contact_name'),
+            'name'         => $request->json('name'),
+            'country'      => $request->json('country'),
+            'email'        => $request->json('email'),
+            'contact_name' => $request->json('contact_name'),
         ]);
         $company->save();
 
         return response()->json($company, Response::HTTP_CREATED);
     }
 
-    public function findOne($id)
+    public function findOne ($id)
     {
         return response()->json(Company::with('contracts')->find($id));
     }
 
-    public function delete($id)
+    public function delete ($id)
     {
         if (!Company::find($id)) {
             return response()->json(['error' => 'Entity not found'], Response::HTTP_NOT_FOUND);
@@ -52,6 +52,6 @@ class CompaniesController extends Controller
         Company::find($id)->candidates()->delete();
         Company::find($id)->contracts()->delete();
         Company::destroy($id);
-        return response('',Response::HTTP_NO_CONTENT);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }
