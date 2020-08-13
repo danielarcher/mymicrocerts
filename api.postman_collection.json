@@ -14,9 +14,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}",
+							"raw": "{{host}}/home",
 							"host": [
 								"{{host}}"
+							],
+							"path": [
+								"home"
 							]
 						}
 					},
@@ -38,11 +41,8 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -79,11 +79,8 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -114,7 +111,7 @@
 							"script": {
 								"id": "5038970f-1bb4-4098-a5ba-896fba85d000",
 								"exec": [
-									"pm.environment.set(\"plan-id\", pm.response.json().data[1].id);"
+									"pm.environment.set(\"plan-id\", pm.response.json().data[0].id);"
 								],
 								"type": "text/javascript"
 							}
@@ -584,7 +581,20 @@
 					"response": []
 				},
 				{
-					"name": "/api/candidate",
+					"name": "/api/category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cd139477-2d25-4ee5-aeb3-7998f9fffbe2",
+								"exec": [
+									"pm.environment.set(\"category-id\", pm.response.json().id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -596,30 +606,39 @@
 								}
 							]
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"name\": \"{{$randomProductMaterial}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{host}}/api/candidate",
+							"raw": "{{host}}/api/category",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"api",
-								"candidate"
+								"category"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/api/category",
+					"name": "/api/category (second)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "cd139477-2d25-4ee5-aeb3-7998f9fffbe2",
+								"id": "e4a6a6fe-69bf-4e6f-b9a6-bc474d1e415b",
 								"exec": [
-									"pm.environment.set(\"category-id\", pm.response.json().id);\r",
+									"pm.environment.set(\"second-category-id\", pm.response.json().id);\r",
 									""
 								],
 								"type": "text/javascript"
@@ -744,7 +763,7 @@
 					"response": []
 				},
 				{
-					"name": "/api/exam",
+					"name": "/api/exam (mixed questions)",
 					"event": [
 						{
 							"listen": "test",
@@ -755,6 +774,19 @@
 									"if (pm.response.json().access_id) {\r",
 									"    pm.environment.set(\"access-id\", pm.response.json().access_id)\r",
 									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "383a42c8-faca-4566-9d4e-a275815dc13a",
+								"exec": [
+									"function randomInteger(min, max) {\r",
+									"  return Math.round(Math.random() * (max - min + 1)) + min;\r",
+									"}\r",
+									"pm.environment.set(\"$randomLowInt\", randomInteger(1,5));"
 								],
 								"type": "text/javascript"
 							}
@@ -775,7 +807,202 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\",\r\n\t\"max_time_in_minutes\": {{$randomInt}},\r\n\t\"success_score_in_percent\": 80\r\n}",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\",\r\n\t\"max_time_in_minutes\": {{$randomInt}},\r\n\t\"success_score_in_percent\": 80,\r\n\t\"questions_per_categories\": [\r\n\t\t{\r\n\t\t\t\"category_id\": \"{{category-id}}\",\r\n\t\t\t\"quantity_of_questions\": {{$randomLowInt}}\r\n\t\t}\r\n\t],\r\n\t\"fixed_questions\": [\r\n\t\t\"{{question-id}}\"\r\n\t] \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/exam",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam (only fixed questions)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "223e07e8-0052-48a5-8c7b-5b8d77aab5e4",
+								"exec": [
+									"pm.environment.set(\"exam-id\", pm.response.json().id);\r",
+									"if (pm.response.json().access_id) {\r",
+									"    pm.environment.set(\"access-id\", pm.response.json().access_id)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "58987cf0-9eeb-4305-85e8-5a3f9a3ed13e",
+								"exec": [
+									"function randomInteger(min, max) {\r",
+									"  return Math.round(Math.random() * (max - min + 1)) + min;\r",
+									"}\r",
+									"pm.environment.set(\"$randomLowInt\", randomInteger(1,5));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\",\r\n\t\"max_time_in_minutes\": {{$randomInt}},\r\n\t\"success_score_in_percent\": 80,\r\n\t\"fixed_questions\": [\r\n\t\t\"{{question-id}}\"\r\n\t] \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/exam",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam (only category questions)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8b2f8bfb-6ee3-46c9-8c16-64699df32dd3",
+								"exec": [
+									"pm.environment.set(\"exam-id\", pm.response.json().id);\r",
+									"if (pm.response.json().access_id) {\r",
+									"    pm.environment.set(\"access-id\", pm.response.json().access_id)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4908596b-e12a-4d23-a554-d588478499a6",
+								"exec": [
+									"function randomInteger(min, max) {\r",
+									"  return Math.round(Math.random() * (max - min + 1)) + min;\r",
+									"}\r",
+									"pm.environment.set(\"$randomLowInt\", randomInteger(1,5));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\",\r\n\t\"max_time_in_minutes\": {{$randomInt}},\r\n\t\"success_score_in_percent\": 80,\r\n\t\"questions_per_categories\": [\r\n\t\t{\r\n\t\t\t\"category_id\": \"{{category-id}}\",\r\n\t\t\t\"quantity_of_questions\": {{$randomLowInt}}\r\n\t\t}\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/exam",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/exam (with 2 cat)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "705630cb-ba0a-4e52-9337-67c26ae8ec94",
+								"exec": [
+									"pm.environment.set(\"exam-id\", pm.response.json().id);\r",
+									"if (pm.response.json().access_id) {\r",
+									"    pm.environment.set(\"access-id\", pm.response.json().access_id)\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "13db3f8a-5355-4ce6-a272-8d36ebdbec88",
+								"exec": [
+									"function randomInteger(min, max) {\r",
+									"  return Math.round(Math.random() * (max - min + 1)) + min;\r",
+									"}\r",
+									"pm.environment.set(\"$randomLowInt\", randomInteger(1,5));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"company_id\": \"{{company-id}}\",\r\n\t\"title\": \"{{$randomJobTitle}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"visible_external\": true,\r\n\t\"password\": \"123\",\r\n\t\"max_time_in_minutes\": {{$randomInt}},\r\n\t\"success_score_in_percent\": 80,\r\n\t\"questions_per_categories\": [\r\n\t\t{\r\n\t\t\t\"category_id\": \"{{category-id}}\",\r\n\t\t\t\"quantity_of_questions\": {{$randomLowInt}}\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"category_id\": \"{{second-category-id}}\",\r\n\t\t\t\"quantity_of_questions\": {{$randomLowInt}}\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -819,6 +1046,34 @@
 								"api",
 								"exam",
 								"{{exam-id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/candidate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/candidate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"candidate"
 							]
 						}
 					},
@@ -944,7 +1199,56 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"exam_id\": \"{{exam-id}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"options\": [\r\n\t\t{\r\n\t\t\t\"text\": \"true-{{$randomLoremSentence}}\",\r\n\t\t\t\"correct\": true\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"exam_id\": \"{{exam-id}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"categories\": [\r\n\t\t\"{{category-id}}\"\r\n\t],\r\n\t\"options\": [\r\n\t\t{\r\n\t\t\t\"text\": \"true-{{$randomLoremSentence}}\",\r\n\t\t\t\"correct\": true\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t}\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/question",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/question (second category)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bdc6fd4a-156e-4176-ac9b-cbbc5e6469a8",
+								"exec": [
+									"pm.environment.set(\"question-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"exam_id\": \"{{exam-id}}\",\r\n\t\"description\": \"{{$randomLoremParagraph}}\",\r\n\t\"categories\": [\r\n\t\t\"{{second-category-id}}\"\r\n\t],\r\n\t\"options\": [\r\n\t\t{\r\n\t\t\t\"text\": \"true-{{$randomLoremSentence}}\",\r\n\t\t\t\"correct\": true\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t},\r\n\t\t{\r\n\t\t\t\"text\": \"{{$randomLoremSentence}}\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1223,7 +1527,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"0a390f50-2c09-4883-9229-fd52d1f7e92a\"]\n\t\t}\n\t]\n}",
+							"raw": "{\n\t\"candidate_id\": \"{{candidate-id}}\",\n\t\"attempt_id\": \"{{attempt-id}}\",\n\t\"answers\": [\n\t\t{\n\t\t\t\"question_id\": \"{{question-id}}\",\n\t\t\t\"selected_option_ids\": [\"ab4906ef-d803-4260-bbb9-964c4383b3c7\"]\n\t\t},\n\t\t{\n\t\t\t\"question_id\": \"335a3484-a049-432f-b069-70bf65f8556e\",\n\t\t\t\"selected_option_ids\": [\"67b4883d-1cef-497e-ba58-a313042a1604\"]\n\t\t}\n\t]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
