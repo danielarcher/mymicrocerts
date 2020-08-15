@@ -12,6 +12,8 @@ abstract class TestCase extends BaseTestCase
 {
     use DatabaseTransactions;
 
+    use RetrieveTokenTrait;
+
     /**
      * @var Generator
      */

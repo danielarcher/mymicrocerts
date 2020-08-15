@@ -3,13 +3,10 @@
 namespace MyCertsTests\System;
 
 use Illuminate\Http\Response;
-use MyCertsTests\RetrieveTokenTrait;
 use MyCertsTests\TestCase;
 
 class CompanyTest extends TestCase
 {
-    use RetrieveTokenTrait;
-
     public function test_create_new_company ()
     {
         $this->json('POST', '/api/company', [

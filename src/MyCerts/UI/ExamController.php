@@ -4,46 +4,57 @@ namespace MyCerts\UI;
 
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use League\Fractal\Serializer\JsonApiSerializer;
+use Illuminate\Validation\ValidationException;
+use Laravel\Lumen\Http\ResponseFactory;
 use MyCerts\Domain\Certification;
 use MyCerts\Domain\ExamValidator;
 use MyCerts\Domain\Exception\AccessDeniedToThisExam;
-use MyCerts\Domain\Exception\AttemptNotFound;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
-use MyCerts\Domain\Exception\ExamNotFound;
 use MyCerts\Domain\Exception\NoAttemptsLeftForThisExam;
 use MyCerts\Domain\Exception\NoCreditsLeft;
 use MyCerts\Domain\Exception\UserAlreadyHaveThisCertification;
-use MyCerts\Domain\Model\Attempt;
 use MyCerts\Domain\Model\Candidate;
-use MyCerts\Domain\Model\Certificate;
 use MyCerts\Domain\Model\Exam;
-use MyCerts\Domain\Transformers\ExamTransformer;
-use MyCerts\UI\Request\ExamCreateRequest;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * Class ExamController
+ *
+ * @package MyCerts\UI
+ */
 class ExamController extends Controller
 {
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
     public function list(Request $request)
     {
         return response()->json(Exam::where('company_id', Auth::user()->company_id)->get());
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse|Response|ResponseFactory
+     * @throws ValidationException
+     */
     public function create(Request $request)
     {
         $this->validate($request, [
-            'company_id'                 => 'required|uuid',
             'title'                      => 'required|unique:exam|string',
             'description'                => 'required|string',
-            'max_time_in_minutes'        => 'required|int',
             'success_score_in_percent'   => 'required|int',
+            'company_id'                 => 'uuid',
+            'max_time_in_minutes'        => 'int',
             'max_attempts_per_candidate' => 'int',
             'visible_internal'           => 'bool',
             'visible_external'           => 'bool',
@@ -51,19 +62,21 @@ class ExamController extends Controller
         ]);
 
         try {
-            $company_id = Auth::user()->isAdmin() ? $request->get('company_id', Auth::user()->company_id) : Auth::user()->company_id;
-
             $exam = new Exam(array_filter([
-                'company_id'                 => $company_id,
-                'title'                      => $request->get('title'),
-                'description'                => $request->get('description'),
-                'max_time_in_minutes'        => $request->get('max_time_in_minutes'),
-                'max_attempts_per_candidate' => $request->get('max_attempts_per_candidate'),
-                'success_score_in_percent'   => $request->get('success_score_in_percent'),
-                'visible_internal'           => $request->get('visible_internal'),
-                'visible_external'           => $request->get('visible_external'),
-                'private'                    => $request->get('private'),
+                'company_id'                 => Auth::user()->company_id,
+                'title'                      => $request->json('title'),
+                'description'                => $request->json('description'),
+                'max_time_in_minutes'        => $request->json('max_time_in_minutes', 60),
+                'max_attempts_per_candidate' => $request->json('max_attempts_per_candidate', 3),
+                'success_score_in_percent'   => $request->json('success_score_in_percent'),
+                'visible_internal'           => $request->json('visible_internal'),
+                'visible_external'           => $request->json('visible_external'),
+                'private'                    => $request->json('private'),
             ]));
+            if (Auth::user()->isAdmin()) {
+                $exam->company_id = $request->json('company_id', Auth::user()->company_id);
+            }
+
             $exam->save();
 
             if ($request->get('visible_external')) {
@@ -86,6 +99,11 @@ class ExamController extends Controller
         }
     }
 
+    /**
+     * @param $id
+     *
+     * @return JsonResponse|Response|ResponseFactory
+     */
     public function findOne($id)
     {
         /** @var Exam $exam */
@@ -101,6 +119,7 @@ class ExamController extends Controller
     /**
      * @param         $id
      * @param Request $request
+     *
      * @return JsonResponse
      * @throws NoCreditsLeft
      */
@@ -109,38 +128,23 @@ class ExamController extends Controller
         $certification = new Certification(new ExamValidator());
         try {
             $selectedUser = $this->validateReceivedUser($request);
-            $response = $certification->startExam($id, $selectedUser);
+            $response     = $certification->startExam($id, $selectedUser);
         } catch (NoCreditsLeft | UserAlreadyHaveThisCertification | NoAttemptsLeftForThisExam $e) {
-            return response()->json(['error' => $e->getMessage()],Response::HTTP_CONFLICT);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
         } catch (AccessDeniedToThisExam $e) {
-            return response()->json(['error' => $e->getMessage()],Response::HTTP_FORBIDDEN);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_FORBIDDEN);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Exam not found'],Response::HTTP_NOT_FOUND);
+            return response()->json(['error' => 'Exam not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json($response, Response::HTTP_OK);
     }
 
     /**
-     * @param         $id
      * @param Request $request
-     * @return JsonResponse
-     * @throws Exception
+     *
+     * @return Authenticatable|null
      */
-    public function finish($id, Request $request)
-    {
-        try {
-            $certification = new Certification(new ExamValidator());
-            $response = $certification->finishExam($request->get('attempt_id'), $request->get('answers'));
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => $e->getMessage()],Response::HTTP_NOT_FOUND);
-        } catch (ExamAlreadyFinished $e) {
-            return response()->json(['error' => $e->getMessage()],Response::HTTP_CONFLICT);
-        }
-
-        return response()->json($response, Response::HTTP_OK);
-    }
-
     private function validateReceivedUser(Request $request)
     {
         if ($request->get('candidate_id') && Auth::user()->isAdmin()) {
@@ -149,9 +153,35 @@ class ExamController extends Controller
         return Auth::user();
     }
 
+    /**
+     * @param         $id
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function finish($id, Request $request)
+    {
+        try {
+            $certification = new Certification(new ExamValidator());
+            $response      = $certification->finishExam($request->get('attempt_id'), $request->get('answers'));
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (ExamAlreadyFinished $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
+        }
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * @param $id
+     *
+     * @return Response|ResponseFactory
+     */
     public function delete($id)
     {
         Exam::destroy($id);
-        return response('',Response::HTTP_NO_CONTENT);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }
