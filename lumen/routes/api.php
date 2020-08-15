@@ -81,6 +81,8 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
             $router->post('question', 'QuestionController@create');
             $router->get('question/{id}', 'QuestionController@findOne');
             $router->delete('question/{id}', 'QuestionController@delete');
+
+            $router->get('/contract', 'CompaniesController@contracts');
         });
 
         /**
