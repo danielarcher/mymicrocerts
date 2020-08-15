@@ -25,6 +25,46 @@ class DatabaseSeeder extends Seeder
             'active' => true,
             'role' => Roles::ADMIN,
         ]);
+        $companyId = Uuid::uuid4()->toString();
+        DB::table('company')->insert([
+            'id' => $companyId,
+            'name' => 'MyMicroCerts',
+            'country' => 'Brazil',
+            'email' => 'company@mymicrocerts.com',
+            'contact_name' => 'company owner',
+        ]);
+        DB::table('candidate')->insert([
+            'id' => Uuid::uuid4()->toString(),
+            'company_id' => $companyId,
+            'email' => 'company@mymicrocerts.com',
+            'password' => Hash::make('company'),
+            'first_name' => 'company',
+            'last_name' => 'company',
+            'verified' => true,
+            'active' => true,
+            'role' => Roles::COMPANY,
+        ]);
+        DB::table('candidate')->insert([
+            'id' => Uuid::uuid4()->toString(),
+            'company_id' => $companyId,
+            'email' => 'user@mymicrocerts.com',
+            'password' => Hash::make('user'),
+            'first_name' => 'user',
+            'last_name' => 'user',
+            'verified' => true,
+            'active' => true,
+            'role' => Roles::CANDIDATE,
+        ]);
+        DB::table('candidate')->insert([
+            'id' => Uuid::uuid4()->toString(),
+            'email' => 'guest@mymicrocerts.com',
+            'password' => Hash::make('guest'),
+            'first_name' => 'guest',
+            'last_name' => 'guest',
+            'verified' => true,
+            'active' => true,
+            'role' => Roles::GUEST,
+        ]);
         DB::table('plan')->insert([
             'id' => Uuid::uuid4()->toString(),
             'name' => 'Free Subscription',
