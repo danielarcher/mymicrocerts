@@ -13,17 +13,19 @@ class PlansController extends Controller
 {
     public function list()
     {
-        return response()->json(Plan::where('active', true)->orderBy('price','asc')->paginate(self::DEFAULT_PAGINATION_LENGHT));
+        return response()->json(Plan::where('active', true)
+            ->orderBy('price', 'asc')
+            ->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
     public function create(Request $request)
     {
         $plan = new Plan([
-            'name'                  => $request->get('name'),
-            'description'           => $request->get('description'),
-            'price'                 => $request->get('price'),
-            'credits'               => $request->get('credits'),
-            'api_requests_per_hour' => $request->get('api_requests_per_hour'),
+            'name'                  => $request->json('name'),
+            'description'           => $request->json('description'),
+            'price'                 => $request->json('price'),
+            'credits'               => $request->json('credits'),
+            'api_requests_per_hour' => $request->json('api_requests_per_hour'),
         ]);
         $plan->save();
 
@@ -41,7 +43,7 @@ class PlansController extends Controller
             'company_id'    => Auth::user()->company_id,
         ]);
         if (Auth::user()->isAdmin()) {
-            $contract->company_id = $request->get('company_id');
+            $contract->company_id = $request->json('company_id', Auth::user()->company_id);
         }
         $contract->save();
         return response()->json($contract, Response::HTTP_CREATED);

@@ -3,7 +3,7 @@
 namespace MyCertsTests\System;
 
 use Illuminate\Http\Response;
-use MyCertsTests\AdminCredentials;
+use MyCertsTests\TestCredentials;
 use MyCertsTests\TestCase;
 
 class LoginTest extends TestCase
@@ -11,8 +11,8 @@ class LoginTest extends TestCase
     public function test_login_successful ()
     {
         $this->json('POST', '/login', [
-            'email'    => AdminCredentials::EMAIL,
-            'password' => AdminCredentials::PASSWORD
+            'email'    => TestCredentials::ADMIN_EMAIL,
+            'password' => TestCredentials::ADMIN_PASSWORD
         ]);
 
         $this->assertResponseOk();
