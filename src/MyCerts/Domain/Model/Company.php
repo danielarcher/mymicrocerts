@@ -6,13 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 use MyCerts\Domain\Exception\NoCreditsLeft;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @property string email
+ * @property string name
+ * @property string  stripe_customer_id
+ */
 class Company extends BaseModel
 {
     protected $table = 'company';
 
-    protected $fillable = ['name','country', 'email', 'contact_name'];
+    protected $fillable = ['name','country', 'email', 'contact_name', 'stripe_customer_id'];
 
-    protected $hidden = ['created_at','updated_at','deleted_at','email','contact_name'];
+    protected $hidden = ['created_at','updated_at','deleted_at','email','contact_name','stripe_customer_id'];
 
     public function contracts()
     {

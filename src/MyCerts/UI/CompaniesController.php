@@ -3,6 +3,7 @@
 namespace MyCerts\UI;
 
 use App\Http\Controllers\Controller;
+use Cartalyst\Stripe\Stripe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -48,6 +49,14 @@ class CompaniesController extends Controller
             'email'        => $request->json('email'),
             'contact_name' => $request->json('contact_name'),
         ]);
+        $company->save();
+
+        $customer = (new Stripe())->customers()->create([
+            'name' => $company->name,
+            'email' => $company->email,
+        ]);
+
+        $company->stripe_customer_id = $customer['id'];
         $company->save();
 
         return response()->json($company, Response::HTTP_CREATED);

@@ -7,10 +7,12 @@
     "require": {
         "php": "^7.4",
         "ext-json": "*",
+        "cartalyst/stripe": "^2.4",
         "firebase/php-jwt": "^5.2",
         "laravel/lumen-framework": "^7.0",
         "mattiasgeniar/php-percentages": "^1.0",
-        "spatie/laravel-fractal": "^5.7"
+        "spatie/laravel-fractal": "^5.7",
+        "stripe/stripe-php": "^7.47"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",

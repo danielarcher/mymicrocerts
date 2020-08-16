@@ -2,6 +2,12 @@
 
 namespace MyCerts\Domain\Model;
 
+/**
+ * @property mixed name
+ * @property mixed description
+ * @property mixed price
+ * @property mixed credits
+ */
 class Plan extends BaseModel
 {
     protected $table = 'plan';

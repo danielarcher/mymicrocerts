@@ -34,4 +34,19 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         $this->faker = Factory::create();
     }
+
+    protected function array_keys_recursive($input, $maxDepth = INF, $depth = 0, $arrayKeys = [])
+    {
+        if ($depth < $maxDepth) {
+            $depth++;
+            $keys = array_keys($input);
+            foreach ($keys as $key) {
+                if (is_array($input[$key]))
+                    $arrayKeys[$key] = $this->array_keys_recursive($input[$key], $maxDepth, $depth);
+                else
+                    $arrayKeys[] = $key;
+            }
+        }
+        return $arrayKeys;
+    }
 }

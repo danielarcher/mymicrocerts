@@ -30,15 +30,14 @@ class Handler extends ExceptionHandler
 
     /**
      * Report or log an exception.
-     *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
      * @param Throwable $exception
-     * @return void
      *
+     * @return void
      * @throws Exception
      */
-    public function report (Throwable $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
     }
@@ -46,33 +45,48 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param Request $request
-     * @param Throwable                $exception
-     * @return Response|JsonResponse
+     * @param Request   $request
+     * @param Throwable $exception
      *
+     * @return Response|JsonResponse
      * @throws Throwable
      */
-    public function render ($request, Throwable $exception)
+    public function render($request, Throwable $exception)
     {
         if ($exception instanceof NotFoundHttpException) {
             return response()->json([
                 'errors' => [
                     [
-                        'title' => 'Resource not found',
-                        'code' => $exception->getStatusCode(),
+                        'description' => 'Resource not found',
+                        'code'        => $exception->getStatusCode(),
                     ]
                 ]
             ], Response::HTTP_NOT_FOUND);
         }
 
+        if ($exception instanceof ValidationException) {
+            foreach ($exception->validator->errors()->toArray() as $field => $error) {
+                $errors[] = [
+                    'param'       => $field,
+                    'description' => $error[0],
+                    'code'        => 0,
+                ];
+            }
+
+            return response()->json([
+                'errors' => $errors ?? []
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return parent::render($request, $exception);
+
         return response()->json([
             'errors' => [
                 [
-                    'status' => $exception->getCode(),
-                    'code'   => $exception->getCode(),
-                    'title'  => $exception->getMessage()
+                    'description' => $exception->getMessage(),
+                    'code'        => $exception->getCode(),
                 ]
             ]
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        ], $exception->getStatusCode());
     }
 }
