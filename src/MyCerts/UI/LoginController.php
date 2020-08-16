@@ -8,6 +8,7 @@ use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\UnauthorizedException;
 use Log;
 use MyCerts\Domain\Model\Candidate;
 
@@ -25,14 +26,14 @@ class LoginController extends Controller
          */
         $candidate = Candidate::where('email', $request->get('email'))->first();
         if (!$candidate) {
-            abort(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
+            throw new UnauthorizedException();
         }
 
         /**
          * Validate password hash
          */
         if (! Hash::check($request->get('password'), $candidate->password)) {
-            abort(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
+            throw new UnauthorizedException();
         }
 
         /**

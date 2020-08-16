@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -78,15 +79,17 @@ class Handler extends ExceptionHandler
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return parent::render($request, $exception);
-
-        return response()->json([
-            'errors' => [
-                [
-                    'description' => $exception->getMessage(),
-                    'code'        => $exception->getCode(),
+        if ($exception instanceof UnauthorizedException) {
+            return response()->json([
+                'errors' => [
+                    [
+                        'description' => 'Invalid Login',
+                        'code'        => $exception->getCode(),
+                    ]
                 ]
-            ]
-        ], $exception->getStatusCode());
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return parent::render($request, $exception);
     }
 }
