@@ -26,6 +26,42 @@
 					"response": []
 				},
 				{
+					"name": "checkout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"company\": {\n\t\t\"name\": \"{{$randomCompanyName}}\",\n\t\t\"country\": \"{{$randomCountryCode}}\"\n\t},\n\t\"user\": {\n\t\t\"email\": \"{{$randomEmail}}\",\n\t\t\"password\": \"{{newRandomPassword}}\",\n\t\t\"confirm_password\": \"{{newRandomPassword}}\",\n\t\t\"first_name\": \"{{$randomFirstName}}\",\n\t\t\"last_name\": \"{{$randomLastName}}\"\n\t},\n\t\"payment\": {\n\t\t\"plan_id\": \"{{plan-id}}\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"cvc\": \"314\",\n\t\t\"exp_month\": \"10\",\n\t\t\"exp_year\": \"2021\"\n\t}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/checkout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "login",
 					"event": [
 						{
@@ -47,6 +83,46 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n\t\"email\": \"{{candidate-email}}\",\n\t\"password\": \"{{newRandomPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login (company owner)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "821d59aa-31ea-4ad5-ae56-d99b672e673f",
+								"exec": [
+									"if (pm.response.json().token) {\r",
+									"    pm.environment.set(\"token\", pm.response.json().token);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"company@mymicrocerts.com\",\n\t\"password\": \"company\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -109,9 +185,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5038970f-1bb4-4098-a5ba-896fba85d000",
+								"id": "7d683506-10e7-4264-bc4d-0a1c46779223",
 								"exec": [
-									"pm.environment.set(\"plan-id\", pm.response.json().data[0].id);"
+									"pm.environment.set(\"plan-id\", pm.response.json().data[1].id);"
 								],
 								"type": "text/javascript"
 							}
@@ -542,6 +618,112 @@
 			"name": "CompanyOwner",
 			"item": [
 				{
+					"name": "/api/contract",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "fcec2ef8-d419-4a18-a442-32f57bf8129e",
+								"exec": [
+									"pm.environment.set(\"category-id\", pm.response.json().data[0].id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/contract",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"contract"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/statistics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2cd162b6-f4ad-4b3f-b66c-cdae7485b240",
+								"exec": [
+									"pm.environment.set(\"category-id\", pm.response.json().data[0].id);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/statistics",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"statistics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/api/plans/{id}/buy",
 					"request": {
 						"auth": {
@@ -558,7 +740,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"company_id\":\"{{company-id}}\"\n}",
+							"raw": "{\n\t\"number\": \"4242424242424242\",\n\t\"cvc\": \"314\",\n\t\"exp_month\": \"10\",\n\t\"exp_year\": \"2021\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1551,6 +1733,19 @@
 				},
 				{
 					"name": "/api/me",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "22fedb69-fc93-4962-897d-a39fc76b9027",
+								"exec": [
+									"pm.environment.set(\"company-id\", pm.response.json().company_id);\r",
+									"pm.environment.set(\"candidate-id\", pm.response.json().id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"auth": {
 							"type": "bearer",
