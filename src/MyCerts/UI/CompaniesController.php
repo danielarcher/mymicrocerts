@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Http\ResponseFactory;
+use MyCerts\Application\CompanyHandler;
 use MyCerts\Domain\Model\Company;
 use MyCerts\Domain\Model\Contract;
 
@@ -20,6 +21,15 @@ use MyCerts\Domain\Model\Contract;
  */
 class CompaniesController extends Controller
 {
+    /**
+     * @var CompanyHandler
+     */
+    private CompanyHandler $handler;
+
+    public function __construct(CompanyHandler $handler)
+    {
+        $this->handler = $handler;
+    }
     /**
      * @return JsonResponse
      */
@@ -43,21 +53,12 @@ class CompaniesController extends Controller
             'contact_name' => 'required',
         ]);
 
-        $company = new Company([
-            'name'         => $request->json('name'),
-            'country'      => $request->json('country'),
-            'email'        => $request->json('email'),
-            'contact_name' => $request->json('contact_name'),
-        ]);
-        $company->save();
-
-        $customer = (new Stripe())->customers()->create([
-            'name' => $company->name,
-            'email' => $company->email,
-        ]);
-
-        $company->stripe_customer_id = $customer['id'];
-        $company->save();
+        $company = $this->handler->create(
+            $request->json('name'),
+            $request->json('country'),
+            $request->json('email'),
+            $request->json('contact_name')
+        );
 
         return response()->json($company, Response::HTTP_CREATED);
     }

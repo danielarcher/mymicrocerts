@@ -26,6 +26,7 @@ $router->group(['middleware' => 'jsonApiContentType'], function (Router $router)
      * Login Url
      */
     $router->post('/login', 'LoginController@login');
+    $router->post('/checkout', 'CheckOutController@payment');
 
     /**
      * External exam with guest user

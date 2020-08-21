@@ -7,14 +7,26 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use MyCerts\Application\CandidateHandler;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Roles;
 
 class CandidateController extends Controller
 {
+    /**
+     * @var CandidateHandler
+     */
+    private CandidateHandler $handler;
+
+    public function __construct(CandidateHandler $handler)
+    {
+
+        $this->handler = $handler;
+    }
+
     public function list()
     {
-        $nonAdminRestriction = Auth::user()->isAdmin() ? [] : ['company_id'=>Auth::user()->company_id];
+        $nonAdminRestriction = Auth::user()->isAdmin() ? [] : ['company_id' => Auth::user()->company_id];
 
         return response()->json(Candidate::where($nonAdminRestriction)->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
@@ -33,7 +45,7 @@ class CandidateController extends Controller
 
         $user = Auth::user();
         if ($request->get('password') !== $request->get('confirm_password')) {
-            return response()->json(['error'=>'password do not match'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['error' => 'password do not match'], Response::HTTP_BAD_REQUEST);
         }
 
         $role = Roles::CANDIDATE;
@@ -41,23 +53,22 @@ class CandidateController extends Controller
             $role = $request->get('super_user') ? Roles::COMPANY : Roles::CANDIDATE;
         }
 
-        $entity = new Candidate(array_filter([
-            'company_id' => $request->get('company_id'),
-            'email'      => $request->get('email'),
-            'password'   => Hash::make($request->get('password')),
-            'first_name' => $request->get('first_name'),
-            'last_name'  => $request->get('last_name'),
-            'role'       => $role,
-        ]));
-        $entity->save();
+        $candidate = $this->handler->create(
+            $request->get('company_id'),
+            $request->get('email'),
+            $request->get('password'),
+            $request->get('first_name'),
+            $request->get('last_name'),
+            $role
+        );
 
-        return response()->json($entity, Response::HTTP_CREATED);
+        return response()->json($candidate, Response::HTTP_CREATED);
     }
 
     public function createGuest(Request $request)
     {
         if ($request->get('password') !== $request->get('confirm_password')) {
-            return response()->json(['error'=>'password do not match'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['error' => 'password do not match'], Response::HTTP_BAD_REQUEST);
         }
 
         $entity = new Candidate(array_filter([
@@ -89,6 +100,6 @@ class CandidateController extends Controller
         }
         Candidate::find($id)->certificates()->delete();
         Candidate::destroy($id);
-        return response('',Response::HTTP_NO_CONTENT);
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }
