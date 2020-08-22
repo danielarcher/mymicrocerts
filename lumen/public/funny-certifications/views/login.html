@@ -1,0 +1,24 @@
+<div>Login</div>
+<form action="" method="post" id="my-form">
+    <label for="email">
+        email
+    </label>
+    <input id="email" type="text" name="email">
+    <br>
+    <label for="password">
+        password
+    </label>
+    <input id="password" type="password" name="password">
+    <input type="submit" value="login">
+</form>
+<script>
+    window.addEventListener("load",function() {
+        document.getElementById('my-form').addEventListener("submit",function(e) {
+            e.preventDefault(); // before the code
+            /* do what you want with the form */
+
+            // Should be triggered on form submit
+            alert('hi');
+        });
+    });
+</script>

@@ -1,13 +1,15 @@
 version: '3.3'
 services:
+
   web:
-    image: lorisleiva/laravel-docker
+    build: ./docker
     container_name: mycerts-web
     command: php -S 0.0.0.0:8000 -t lumen/public
     ports:
       - 8000:8000
     volumes:
       - ./:/var/www
+
   mysql:
     image: mysql
     container_name: mycerts-mysql
@@ -19,6 +21,12 @@ services:
       MYSQL_DATABASE: mycerts
     ports:
       - 3306:3306
+
+  redis:
+    image: redis:alpine
+    container_name: mycerts-redis
+    command: redis-server --requirepass redispass
+
   adminer:
     image: adminer
     container_name: mycerts-adminer

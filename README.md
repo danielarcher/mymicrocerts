@@ -24,3 +24,10 @@ exemple
 	]
 }
 ```
+
+
+
+- adicionar validacao para quantidade de questoes maior do que atual categoria.
+- validacao para questoes fixas, devem existir
+- verificar se o teste é valido atualmente (mesma validacao da criacao)
+- implementar a limitacao dos planos

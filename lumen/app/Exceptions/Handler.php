@@ -13,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -63,6 +64,17 @@ class Handler extends ExceptionHandler
                     ]
                 ]
             ], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($exception instanceof TooManyRequestsHttpException) {
+            return response()->json([
+                'errors' => [
+                    [
+                        'description' => 'Rate limit exception',
+                        'code'        => $exception->getStatusCode(),
+                    ]
+                ]
+            ], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
         if ($exception instanceof ValidationException) {

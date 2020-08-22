@@ -5,14 +5,12 @@ namespace MyCerts\UI;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use MyCerts\Application\CandidateHandler;
 use MyCerts\Application\CompanyHandler;
 use MyCerts\Application\PaymentHandler;
-use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Roles;
 
-class CheckOutController extends Controller
+class CheckoutController extends Controller
 {
     /**
      * @var CompanyHandler

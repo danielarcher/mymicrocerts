@@ -8,6 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Http\ResponseFactory;
 use MyCerts\Domain\Exception\TransactionDeclinedException;
@@ -28,9 +30,11 @@ class PlansController extends Controller
      */
     public function list()
     {
-        return response()->json(Plan::where('active', true)
-            ->orderBy('price', 'asc')
-            ->paginate(self::DEFAULT_PAGINATION_LENGHT));
+        $plans = Cache::get('plans', function() {
+            return Plan::where('active', true)->orderBy('price', 'asc')->paginate(self::DEFAULT_PAGINATION_LENGHT);
+        });
+
+        return response()->json($plans);
     }
 
     /**

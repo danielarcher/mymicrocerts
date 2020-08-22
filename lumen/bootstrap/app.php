@@ -3,6 +3,7 @@
 use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\CompanyOwnerOnly;
 use App\Http\Middleware\JsonApiContentType;
+use GrahamCampbell\Throttle\Http\Middleware\ThrottleMiddleware;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -76,12 +77,12 @@ $app->configure('mycerts');
 |
 */
 
-
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
-    'admin' => AdminOnly::class,
-    'companyOwner' => CompanyOwnerOnly::class,
+    'auth'               => App\Http\Middleware\Authenticate::class,
+    'admin'              => AdminOnly::class,
+    'companyOwner'       => CompanyOwnerOnly::class,
     'jsonApiContentType' => JsonApiContentType::class,
+    'throttle'           => ThrottleMiddleware::class,
 ]);
 
 /*
@@ -98,6 +99,9 @@ $app->routeMiddleware([
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(\GrahamCampbell\Throttle\ThrottleServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
@@ -112,7 +116,7 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->router->group([
     'namespace' => 'MyCerts\UI',
 ], function ($router) {
-    require __DIR__.'/../routes/api.php';
+    require __DIR__ . '/../routes/api.php';
 });
 
 return $app;

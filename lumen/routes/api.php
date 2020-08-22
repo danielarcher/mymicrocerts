@@ -15,18 +15,24 @@
 
 use Laravel\Lumen\Routing\Router;
 
-$router->get('/home', function () use ($router) {
-    return response()->json([
-        'message' => 'Welcome to MyMicroCerts ' . config('mycerts.version')
-    ]);
+$router->group(['middleware' => 'throttle:3,1'], function(Router $router){
+    $router->get('/home', function () use ($router) {
+        return response()->json([
+            'message' => 'Welcome to MyMicroCerts ' . config('mycerts.version')
+        ]);
+    });
 });
 
-$router->group(['middleware' => 'jsonApiContentType'], function (Router $router) {
+$router->group(['middleware' => ['jsonApiContentType']], function (Router $router) {
     /**
      * Login Url
      */
     $router->post('/login', 'LoginController@login');
-    $router->post('/checkout', 'CheckOutController@payment');
+
+    /**
+     * Checkout
+     */
+    $router->post('/checkout', 'CheckoutController@payment');
 
     /**
      * External exam with guest user
@@ -84,6 +90,21 @@ $router->group(['prefix' => 'api', 'middleware' => 'jsonApiContentType'], functi
             $router->delete('question/{id}', 'QuestionController@delete');
 
             $router->get('/contract', 'CompaniesController@contracts');
+            $router->get('/statistics', function () {
+                return response()->json([
+                    'exam_total',
+                    'questions_total',
+                    'categories_total',
+                    'candidates_total'
+                ]);
+            });
+            $router->get('/statistics-advanced', function () {
+                return response()->json([
+                    'attempts_performed',
+                    'certifications_total',
+                ]);
+            });
+
         });
 
         /**

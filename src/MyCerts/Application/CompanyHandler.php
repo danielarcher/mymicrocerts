@@ -13,6 +13,16 @@ use MyCerts\Domain\Model\Company;
 class CompanyHandler
 {
     /**
+     * @var Stripe
+     */
+    private Stripe $stripe;
+
+    public function __construct(Stripe $stripe)
+    {
+        $this->stripe = $stripe;
+    }
+
+    /**
      * @param string $name
      * @param string $country
      * @param string $email
@@ -30,7 +40,7 @@ class CompanyHandler
         ]);
         $company->save();
 
-        $customer = (new Stripe())->customers()->create([
+        $customer = $this->stripe->customers()->create([
             'name'  => $company->name,
             'email' => $company->email,
         ]);
