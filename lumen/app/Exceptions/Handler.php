@@ -71,6 +71,17 @@ class Handler extends ExceptionHandler
                 ]
             ], Response::HTTP_NOT_FOUND);
         }
+        if ($exception instanceof ModelNotFoundException) {
+            $message = !empty($exception->getMessage()) ? $exception->getMessage() : null;
+            return response()->json([
+                'errors' => [
+                    [
+                        'description' => $message ?? 'Resource not found',
+                        'code'        => $exception->getCode(),
+                    ]
+                ]
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         if ($exception instanceof TooManyRequestsHttpException) {
             return response()->json([

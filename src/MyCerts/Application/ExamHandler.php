@@ -2,8 +2,11 @@
 
 namespace MyCerts\Application;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
+use MyCerts\Domain\Model\Category;
 use MyCerts\Domain\Model\Exam;
+use MyCerts\Domain\Model\Question;
 use Ramsey\Uuid\Uuid;
 
 class ExamHandler
@@ -60,12 +63,40 @@ class ExamHandler
         $exam->save();
 
         if ($fixed_questions) {
+            $this->assertQuestionsExists($fixed_questions);
             $exam->fixedQuestions()->sync($fixed_questions);
         }
         if ($questions_per_categories) {
+            $this->assertQuantityIsFillable($questions_per_categories);
             $exam->questionsPerCategory()->sync($questions_per_categories);
         }
 
         return $exam;
+    }
+
+    protected function assertQuestionsExists(array $questionIDs)
+    {
+        foreach ($questionIDs as $id) {
+            if (!Question::find($id)) {
+                throw new ModelNotFoundException('Question not found');
+            }
+        }
+    }
+
+    protected function assertQuantityIsFillable(array $questionsPerCategory)
+    {
+        foreach ($questionsPerCategory as $categoryArray) {
+            $categoryArray['category_id'];
+            $categoryArray['quantity_of_questions'];
+
+            $categoryCollection = Category::find($categoryArray['category_id']);
+            if (!$categoryCollection) {
+                throw new ModelNotFoundException('Category not found');
+            }
+
+            if ($categoryCollection->first()->questions()->count() < $categoryArray['quantity_of_questions']) {
+                throw new ModelNotFoundException('Current question count is not sufficient');
+            }
+        }
     }
 }

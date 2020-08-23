@@ -260,4 +260,27 @@ class PerformExamTest extends TestCase
         );
         $this->assertResponseStatus(Response::HTTP_CONFLICT);
     }
+
+    public function test_should_not_create_exam_with_non_existing_questions()
+    {
+        /**
+         * Create exam
+         */
+        $this->json('POST',
+            '/api/exam',
+            [
+                "title"                      => $this->faker->jobTitle,
+                "description"                => $this->faker->paragraph,
+                "visible_external"           => false,
+                "success_score_in_percent"   => 100,
+                "fixed_questions" => [
+                    $this->faker->uuid
+                ]
+            ],
+            [
+                'Authorization' => $this->companyToken()
+            ]
+        );
+        $this->assertResponseStatus(Response::HTTP_NOT_FOUND);
+    }
 }
