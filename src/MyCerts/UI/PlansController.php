@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Http\ResponseFactory;
+use MyCerts\Application\PaymentHandler;
 use MyCerts\Domain\Exception\TransactionDeclinedException;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Company;
@@ -23,8 +24,19 @@ use MyCerts\Domain\Model\Plan;
  *
  * @package MyCerts\UI
  */
-class PlansController extends Controller
+class PlansController extends BaseController
 {
+
+    /**
+     * @var PaymentHandler
+     */
+    private PaymentHandler $paymentHandler;
+
+    public function __construct(PaymentHandler $paymentHandler)
+    {
+        $this->paymentHandler = $paymentHandler;
+    }
+
     /**
      * @return JsonResponse
      */
@@ -56,20 +68,36 @@ class PlansController extends Controller
         return response()->json($plan, Response::HTTP_CREATED);
     }
 
+    /**
+     * @param string  $id
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws TransactionDeclinedException
+     * @throws ValidationException
+     */
     public function buy(string $id, Request $request)
     {
         $plan = Plan::find($id);
 
-        $company = Auth::user()->company()->first();
-        if (Auth::user()->isAdmin() && $request->json('company_id')) {
-            $company = Company::find($request->json('company_id'));
-        }
+        $this->validate($request, [
+            'number'    => 'string',
+            'exp_month' => 'integer',
+            'cvc'       => 'integer',
+            'exp_year'  => 'integer',
+        ]);
 
-        if ($plan->price > 1) {
-            $this->chargeUser($request, $company, $plan->price);
-        }
+        $company = $this->retrieveCompany($request);
 
-        $contract = $this->createContract($plan, $company);
+        $contract = $this->paymentHandler->charge(
+            $plan->id,
+            $company->id,
+            $company->stripe_customer_id,
+            $request->json('number'),
+            $request->json('cvc'),
+            $request->json('exp_month'),
+            $request->json('exp_year')
+        );
 
         return response()->json($contract, Response::HTTP_CREATED);
     }

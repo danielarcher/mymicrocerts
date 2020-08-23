@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
@@ -24,9 +25,9 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        AuthorizationException::class,
+        #AuthorizationException::class,
         HttpException::class,
-        ModelNotFoundException::class,
+        #ModelNotFoundException::class,
         ValidationException::class,
     ];
 
@@ -41,7 +42,12 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
-        parent::report($exception);
+        if ($exception instanceof ValidationException) {
+            Log::error($exception->getMessage(), $exception->validator->errors()->toArray());
+        }
+        if ($this->shouldReport($exception)){
+            Log::error($exception->getMessage());
+        }
     }
 
     /**

@@ -8,7 +8,10 @@ use Illuminate\Http\Response;
 use MyCerts\Application\CandidateHandler;
 use MyCerts\Application\CompanyHandler;
 use MyCerts\Application\PaymentHandler;
+use MyCerts\Application\QuestionHandler;
+use MyCerts\Domain\Model\Category;
 use MyCerts\Domain\Roles;
+use Symfony\Component\Yaml\Yaml;
 
 class CheckoutController extends Controller
 {
@@ -24,15 +27,21 @@ class CheckoutController extends Controller
      * @var PaymentHandler
      */
     private PaymentHandler $paymentHandler;
+    /**
+     * @var QuestionHandler
+     */
+    private QuestionHandler $questionHandler;
 
     public function __construct(
         CompanyHandler $companyHandler,
         CandidateHandler $candidateHandler,
-        PaymentHandler $paymentHandler
+        PaymentHandler $paymentHandler,
+        QuestionHandler $questionHandler
     ) {
         $this->companyHandler   = $companyHandler;
         $this->candidateHandler = $candidateHandler;
         $this->paymentHandler   = $paymentHandler;
+        $this->questionHandler  = $questionHandler;
     }
 
     public function payment(Request $request)
@@ -84,5 +93,46 @@ class CheckoutController extends Controller
         );
 
         return response()->json(compact('company', 'candidate', 'contract'), Response::HTTP_CREATED);
+    }
+
+    public function populate($companyId)
+    {
+        $files = glob(__DIR__ . '/../../../vendor/certificationy/php-pack/data/*');
+        foreach ($files as $file) {
+            var_dump($file);
+            $this->importFile($file, $companyId);
+        }
+        return response()->json('',Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param $file
+     * @param $companyId
+     */
+    public function importFile($file, $companyId): void
+    {
+        $yaml = Yaml::parseFile($file);
+
+        $category = new Category(array_filter([
+            'company_id' => $companyId,
+            'name'       => $yaml['category'],
+        ]));
+        $category->save();
+
+        foreach ($yaml['questions'] as $question) {
+            $options   = array_map(function ($array) {
+                return [
+                    'text'    => $array['value'],
+                    'correct' => $array['correct']
+                ];
+            }, $question['answers']);
+            $this->questionHandler->create(
+                $companyId,
+                $question['question'],
+                [(string) $category->id],
+                $options,
+                null
+            );
+        }
     }
 }

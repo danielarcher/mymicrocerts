@@ -7,17 +7,18 @@ use Mattiasgeniar\Percentage\Percentage;
 
 /**
  * @property string company_id
- * @property string title
- * @property string description
- * @property int max_time_in_minutes
- * @property int max_attempts_per_candidate
- * @property int success_score_in_percent
- * @property boolean visible_internal
- * @property boolean visible_external
- * @property boolean private
- * @property string access_id
- * @property string access_password
- * @property Company company
+ * @property string       title
+ * @property string       description
+ * @property int          max_time_in_minutes
+ * @property int          max_attempts_per_candidate
+ * @property int          success_score_in_percent
+ * @property boolean      visible_internal
+ * @property boolean      visible_external
+ * @property boolean      private
+ * @property string       access_id
+ * @property string       access_password
+ * @property Company      company
+ * @property mixed|string link
  */
 class Exam extends BaseModel
 {

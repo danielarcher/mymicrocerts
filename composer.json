@@ -8,6 +8,7 @@
         "php": "^7.4",
         "ext-json": "*",
         "cartalyst/stripe": "^2.4",
+        "certificationy/php-pack": "^1.4",
         "firebase/php-jwt": "^5.2",
         "graham-campbell/throttle": "^8.1",
         "illuminate/redis": "^7.25",
@@ -15,7 +16,8 @@
         "mattiasgeniar/php-percentages": "^1.0",
         "predis/predis": "^1.1",
         "spatie/laravel-fractal": "^5.7",
-        "stripe/stripe-php": "^7.47"
+        "stripe/stripe-php": "^7.47",
+        "symfony/yaml": "^5.1"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.7",

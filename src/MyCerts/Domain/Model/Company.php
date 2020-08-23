@@ -9,7 +9,7 @@ use Ramsey\Uuid\Uuid;
 /**
  * @property string email
  * @property string name
- * @property string  stripe_customer_id
+ * @property string stripe_customer_id
  */
 class Company extends BaseModel
 {
