@@ -28,22 +28,28 @@ class LoginTest extends TestCase
         $this->assertResponseStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function test_valid_error_response_structure()
+    public function test_valid_error_response_structure_for_invalid_credentials()
     {
         $this->json('POST', '/login', [
             'email'    => $this->faker->email,
             'password' => $this->faker->password
         ]);
 
-        $expectedStructure = [
-            'errors' => [
-                [
-                    'description',
-                    'code'
-                ]
-            ]
-        ];
-        $returnArray = json_decode($this->response->content(), true);
-        $this->assertEquals($expectedStructure, $this->array_keys_recursive($returnArray));
+        $this->assertErrorStructure();
+    }
+
+    public function test_valid_error_response_structure_for_missing_fields()
+    {
+        $this->json('POST', '/login', [
+            'email'    => $this->faker->email
+        ]);
+
+        $this->assertValidationErrorStructure();
+
+        $this->json('POST', '/login', [
+            'password'    => $this->faker->password
+        ]);
+
+        $this->assertValidationErrorStructure();
     }
 }
