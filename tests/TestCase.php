@@ -35,18 +35,62 @@ abstract class TestCase extends BaseTestCase
         $this->faker = Factory::create();
     }
 
+    protected function assertErrorStructure()
+    {
+        $this->assertStructureIsCorrect([
+            'errors' => [
+                [
+                    'description',
+                    'code'
+                ]
+            ]
+        ]);
+    }
+
+    protected function assertStructureIsCorrect($expectedStructure)
+    {
+        $returnArray = json_decode($this->response->content(), true);
+        $this->assertEqualsCanonicalizing($expectedStructure, $this->array_keys_recursive($returnArray));
+    }
+
     protected function array_keys_recursive($input, $maxDepth = INF, $depth = 0, $arrayKeys = [])
     {
         if ($depth < $maxDepth) {
             $depth++;
             $keys = array_keys($input);
             foreach ($keys as $key) {
-                if (is_array($input[$key]))
+                if (is_array($input[$key])) {
                     $arrayKeys[$key] = $this->array_keys_recursive($input[$key], $maxDepth, $depth);
-                else
+                } else {
                     $arrayKeys[] = $key;
+                }
             }
         }
         return $arrayKeys;
+    }
+
+    protected function assertValidationErrorStructure()
+    {
+        $this->assertStructureIsCorrect([
+            'errors' => [
+                [
+                    'description',
+                    'code',
+                    'param',
+                ]
+            ]
+        ]);
+    }
+
+    protected function assertListStructure()
+    {
+        $this->assertStructureIsCorrect([
+            'errors' => [
+                [
+                    'description',
+                    'code'
+                ]
+            ]
+        ]);
     }
 }

@@ -78,7 +78,7 @@ class CompaniesController extends Controller
      */
     public function contracts()
     {
-        return response()->json(Contract::where(['company_id'=>Auth::user()->company_id])->get());
+        return response()->json(Contract::where(['company_id'=>Auth::user()->company_id])->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
     /**
