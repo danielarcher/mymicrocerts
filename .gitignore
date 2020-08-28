@@ -1,6 +1,6 @@
-
 vendor/
-
 .idea/
-
 .phpunit.result.cache
+mycerts.tar.gz
+
+lumen/database/database.sqlite

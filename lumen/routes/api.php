@@ -19,7 +19,9 @@ use Symfony\Component\Yaml\Yaml;
 $router->group(['middleware' => 'throttle:120,1'], function(Router $router){
     $router->get('/home', function () use ($router) {
         return response()->json([
-            'message' => 'Welcome to MyMicroCerts ' . config('mycerts.version')
+            'message' => 'Welcome to MyMicroCerts ' . config('mycerts.version'),
+            'env' => env('APP_ENV'),
+            'name' => env('APP_NAME')
         ]);
     });
 });

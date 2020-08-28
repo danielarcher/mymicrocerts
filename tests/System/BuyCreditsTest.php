@@ -17,9 +17,6 @@ class BuyCreditsTest extends TestCase
 
         $this->json('POST', "/api/plans/{$plan->id}/buy", $this->faker->creditCardDetails, ['Authorization' => $this->companyToken()]);
 
-        $response = json_decode($this->response->content(), true);
-
         $this->assertResponseStatus(Response::HTTP_CREATED);
-        $this->seeInDatabase('contract', $response);
     }
 }
