@@ -1,6 +1,4 @@
-
 vendor/
-
 .idea/
-
 .phpunit.result.cache
+mycerts.tar.gz

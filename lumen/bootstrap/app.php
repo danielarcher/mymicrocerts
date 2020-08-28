@@ -6,9 +6,8 @@ use App\Http\Middleware\JsonApiContentType;
 use GrahamCampbell\Throttle\Http\Middleware\ThrottleMiddleware;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
-    dirname(__DIR__)
+    dirname(__DIR__), '.env.'.env('APP_ENV', 'production')
 ))->bootstrap();
 
 date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
@@ -27,7 +26,6 @@ date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
 $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
-
 $app->withFacades();
 $app->instance('path.storage', app()->basePath() . DIRECTORY_SEPARATOR . 'storage');
 $app->withEloquent();
@@ -118,5 +116,5 @@ $app->router->group([
 ], function ($router) {
     require __DIR__ . '/../routes/api.php';
 });
-
+#dd(env('APP_ENV'));
 return $app;
