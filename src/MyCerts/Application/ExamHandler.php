@@ -28,6 +28,55 @@ class ExamHandler
      * @return Exam
      */
     public function create(
+        string $company_id,
+        string $title,
+        string $description,
+        string $success_score_in_percent,
+        ?int $max_time_in_minutes,
+        ?int $max_attempts_per_candidate,
+        ?bool $visible_internal,
+        ?bool $visible_external,
+        ?bool $private,
+        ?string $password,
+        ?array $fixed_questions,
+        ?array $questions_per_categories
+    ): Exam {
+
+        $exam = new Exam(array_filter([
+            'company_id'                 => $company_id,
+            'title'                      => $title,
+            'description'                => $description,
+            'max_time_in_minutes'        => $max_time_in_minutes,
+            'max_attempts_per_candidate' => $max_attempts_per_candidate,
+            'success_score_in_percent'   => $success_score_in_percent,
+            'visible_internal'           => $visible_internal,
+            'visible_external'           => $visible_external,
+            'private'                    => $private,
+        ]));
+
+        if ($visible_external) {
+            $exam->access_id       = base64_encode(Uuid::uuid4()->toString());
+            $exam->access_password = $password ? Hash::make($password) : null;
+            $exam->link            = route('external.index', ['id' => $exam->access_id]);
+        }
+
+        $exam->save();
+
+        if ($fixed_questions) {
+            $this->assertQuestionsExists($fixed_questions);
+            $exam->fixedQuestions()->sync($fixed_questions);
+        }
+        if ($questions_per_categories) {
+            $this->assertQuantityIsFillable($questions_per_categories);
+            $exam->questionsPerCategory()->sync($questions_per_categories);
+        }
+
+        return $exam;
+    }
+
+    public function update(
+        string $company_id,
+        string $exam_id,
         ?string $title,
         ?string $description,
         ?int $max_time_in_minutes,
@@ -36,14 +85,13 @@ class ExamHandler
         ?bool $visible_internal,
         ?bool $visible_external,
         ?bool $private,
-        ?string $company_id,
         ?string $password,
         ?array $fixed_questions,
         ?array $questions_per_categories
     ): Exam {
-
-        $exam = new Exam(array_filter([
-            'company_id'                 => $company_id,
+        /** @var Exam $exam */
+        $exam = Exam::where(['id' => $exam_id, 'company_id' => $company_id])->first();
+        $exam->fill(array_filter([
             'title'                      => $title,
             'description'                => $description,
             'max_time_in_minutes'        => $max_time_in_minutes,

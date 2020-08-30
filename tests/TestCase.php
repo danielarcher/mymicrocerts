@@ -4,6 +4,7 @@ namespace MyCertsTests;
 
 use Faker\Factory;
 use Faker\Generator;
+use Illuminate\Http\Response;
 use Laravel\Lumen\Application;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 use Laravel\Lumen\Testing\TestCase as BaseTestCase;
@@ -47,6 +48,21 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
+    public function assertResponseCreated()
+    {
+        $this->assertResponseStatus(Response::HTTP_CREATED);
+    }
+
+    public function assertResponseNoContent()
+    {
+        $this->assertResponseStatus(Response::HTTP_NO_CONTENT);
+    }
+
+    public function assertResponseUnprocessableEntity()
+    {
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     protected function assertStructureIsCorrect($expectedStructure)
     {
         $returnArray = json_decode($this->response->content(), true);
@@ -69,28 +85,24 @@ abstract class TestCase extends BaseTestCase
         return $arrayKeys;
     }
 
-    protected function assertValidationErrorStructure()
+    protected function assertValidationErrorStructure(int $numberOfErrors = 1)
     {
         $this->assertStructureIsCorrect([
-            'errors' => [
-                [
-                    'description',
-                    'code',
-                    'param',
-                ]
-            ]
+            'errors' => array_fill(0, $numberOfErrors, [
+                'description',
+                'code',
+                'param',
+            ])
         ]);
     }
 
-    protected function assertListStructure()
+    protected function assertErrorList(int $numberOfErrors)
     {
         $this->assertStructureIsCorrect([
-            'errors' => [
-                [
-                    'description',
-                    'code'
-                ]
-            ]
+            'errors' => array_fill(0, $numberOfErrors, [
+                'description',
+                'code'
+            ])
         ]);
     }
 }

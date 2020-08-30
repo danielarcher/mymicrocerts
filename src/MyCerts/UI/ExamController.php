@@ -71,14 +71,62 @@ class ExamController extends BaseController
             'private'                    => 'bool',
 
             'questions_per_categories'                         => 'array',
-            'questions_per_categories.*.category_id'           => 'string',
-            'questions_per_categories.*.quantity_of_questions' => 'int',
+            'questions_per_categories.*.category_id'           => 'required_with:questions_per_categories.*|string',
+            'questions_per_categories.*.quantity_of_questions' => 'required_with:questions_per_categories.*|int',
 
             'fixed_questions'   => 'array',
             'fixed_questions.*' => 'string',
         ]);
 
         $exam = $this->handler->create(
+            $this->retrieveCompany($request)->id,
+            $request->json('title'),
+            $request->json('description'),
+            $request->json('success_score_in_percent'),
+            $request->json('max_time_in_minutes', 60),
+            $request->json('max_attempts_per_candidate', 3),
+            $request->json('visible_internal'),
+            $request->json('visible_external'),
+            $request->json('private'),
+            $request->json('password'),
+            $request->json('fixed_questions'),
+            $request->json('questions_per_categories')
+        );
+
+        return response()->json($exam, Response::HTTP_CREATED);
+
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse|Response|ResponseFactory
+     * @throws ValidationException
+     */
+    public function patch(string $id, Request $request)
+    {
+        $this->validate($request, [
+            'title'                      => 'string',
+            'description'                => 'string',
+            'success_score_in_percent'   => 'int',
+            'company_id'                 => 'uuid',
+            'max_time_in_minutes'        => 'int',
+            'max_attempts_per_candidate' => 'int',
+            'visible_internal'           => 'bool',
+            'visible_external'           => 'bool',
+            'private'                    => 'bool',
+
+            'questions_per_categories'                         => 'array',
+            'questions_per_categories.*.category_id'           => 'required_with:questions_per_categories.*|string',
+            'questions_per_categories.*.quantity_of_questions' => 'required_with:questions_per_categories.*|int',
+
+            'fixed_questions'   => 'array',
+            'fixed_questions.*' => 'string',
+        ]);
+
+        $exam = $this->handler->update(
+            $this->retrieveCompany($request)->id,
+            $id,
             $request->json('title'),
             $request->json('description'),
             $request->json('max_time_in_minutes', 60),
@@ -87,13 +135,12 @@ class ExamController extends BaseController
             $request->json('visible_internal'),
             $request->json('visible_external'),
             $request->json('private'),
-            $this->retrieveCompany($request)->id,
             $request->json('password'),
             $request->json('fixed_questions'),
             $request->json('questions_per_categories')
         );
 
-        return response()->json($exam, Response::HTTP_CREATED);
+        return response()->json($exam);
 
     }
 

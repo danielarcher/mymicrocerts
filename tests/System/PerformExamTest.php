@@ -19,46 +19,76 @@ class PerformExamTest extends TestCase
      */
     protected $candidate;
 
-    protected function setUp(): void
+    public function test_it_should_create_exam()
     {
-        parent::setUp();
-
         /**
-         * Get Candidate
+         * Create exam
          */
-        $this->candidate = $this->json('GET', '/api/me',
-            [], ['Authorization' => $this->companyToken()])->response->getOriginalContent();
-
-        /**
-         * Get Plan and Buy Credits
-         */
-        $plan = $this->json('GET', '/api/plans')->response->getOriginalContent()->first();
-        $this->json('POST', "/api/plans/{$plan->id}/buy", $this->faker->creditCardDetails,
-            ['Authorization' => $this->companyToken()]);
-
-        /**
-         * Create category
-         */
-        $this->json('POST', '/api/category', [
-            "name" => $this->faker->word
-        ], ['Authorization' => $this->companyToken()]);
-
-        $this->category = $this->response->getOriginalContent();
-
-        /**
-         * Create question
-         */
-        $questionPayload = [
-            "description" => $this->faker->paragraph,
-            "categories"  => [$this->category->id],
-            "options"     => [
-                [
-                    "text"    => $this->faker->text,
-                    "correct" => true
+        $title = $this->faker->jobTitle;
+        $this->json('POST',
+            '/api/exam',
+            [
+                "title"                    => $title,
+                "description"              => $this->faker->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "questions_per_categories" => [
+                    [
+                        "category_id"           => $this->category->id,
+                        "quantity_of_questions" => 1
+                    ]
                 ]
+            ],
+            [
+                'Authorization' => $this->companyToken()
             ]
-        ];
-        $this->json('POST', '/api/question', $questionPayload, ['Authorization' => $this->companyToken()]);
+        );
+        $this->assertResponseCreated();
+        $this->seeInDatabase('exam', ['title' => $title]);
+    }
+
+    public function test_it_should_update_exam()
+    {
+        /**
+         * Create exam
+         */
+        $title = $this->faker->jobTitle;
+        $this->json('POST',
+            '/api/exam',
+            [
+                "title"                    => $title,
+                "description"              => $this->faker->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "questions_per_categories" => [
+                    [
+                        "category_id"           => $this->category->id,
+                        "quantity_of_questions" => 1
+                    ]
+                ]
+            ],
+            [
+                'Authorization' => $this->companyToken()
+            ]
+        );
+        $exam = $this->response->getOriginalContent();
+
+        /**
+         * update exam
+         */
+        $updatedTitle = $this->faker->jobTitle;
+        $this->json('PATCH',
+            '/api/exam/'.$exam->id,
+            [
+                "title" => $updatedTitle,
+            ],
+            [
+                'Authorization' => $this->companyToken()
+            ]
+        );
+        $this->assertResponseOk();
+        $this->notSeeInDatabase('exam', ['title' => $title]);
+        $this->seeInDatabase('exam', ['title' => $updatedTitle]);
     }
 
     public function test_it_should_create_complete_exam_entities_and_be_approved()
@@ -69,11 +99,11 @@ class PerformExamTest extends TestCase
         $this->json('POST',
             '/api/exam',
             [
-                "title"                      => $this->faker->jobTitle,
-                "description"                => $this->faker->paragraph,
-                "visible_external"           => false,
-                "success_score_in_percent"   => 100,
-                "questions_per_categories"   => [
+                "title"                    => $this->faker->jobTitle,
+                "description"              => $this->faker->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "questions_per_categories" => [
                     [
                         "category_id"           => $this->category->id,
                         "quantity_of_questions" => 1
@@ -142,11 +172,11 @@ class PerformExamTest extends TestCase
         $this->json('POST',
             '/api/exam',
             [
-                "title"                      => $this->faker->jobTitle,
-                "description"                => $this->faker->paragraph,
-                "visible_external"           => false,
-                "success_score_in_percent"   => 100,
-                "questions_per_categories"   => [
+                "title"                    => $this->faker->jobTitle,
+                "description"              => $this->faker->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "questions_per_categories" => [
                     [
                         "category_id"           => $this->category->id,
                         "quantity_of_questions" => 1
@@ -269,11 +299,11 @@ class PerformExamTest extends TestCase
         $this->json('POST',
             '/api/exam',
             [
-                "title"                      => $this->faker->jobTitle,
-                "description"                => $this->faker->paragraph,
-                "visible_external"           => false,
-                "success_score_in_percent"   => 100,
-                "fixed_questions" => [
+                "title"                    => $this->faker->jobTitle,
+                "description"              => $this->faker->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "fixed_questions"          => [
                     $this->faker->uuid
                 ]
             ],
@@ -282,5 +312,47 @@ class PerformExamTest extends TestCase
             ]
         );
         $this->assertResponseStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        /**
+         * Get Candidate
+         */
+        $this->candidate = $this->json('GET', '/api/me',
+            [], ['Authorization' => $this->companyToken()])->response->getOriginalContent();
+
+        /**
+         * Get Plan and Buy Credits
+         */
+        $plan = $this->json('GET', '/api/plans')->response->getOriginalContent()->first();
+        $this->json('POST', "/api/plans/{$plan->id}/buy", $this->faker->creditCardDetails,
+            ['Authorization' => $this->companyToken()]);
+
+        /**
+         * Create category
+         */
+        $this->json('POST', '/api/category', [
+            "name" => $this->faker->word
+        ], ['Authorization' => $this->companyToken()]);
+
+        $this->category = $this->response->getOriginalContent();
+
+        /**
+         * Create question
+         */
+        $questionPayload = [
+            "description" => $this->faker->paragraph,
+            "categories"  => [$this->category->id],
+            "options"     => [
+                [
+                    "text"    => $this->faker->text,
+                    "correct" => true
+                ]
+            ]
+        ];
+        $this->json('POST', '/api/question', $questionPayload, ['Authorization' => $this->companyToken()]);
     }
 }

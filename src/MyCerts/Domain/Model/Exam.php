@@ -19,6 +19,7 @@ use Mattiasgeniar\Percentage\Percentage;
  * @property string       access_password
  * @property Company      company
  * @property mixed|string link
+ * @method static where(string[] $array)
  */
 class Exam extends BaseModel
 {

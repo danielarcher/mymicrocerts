@@ -13,7 +13,9 @@ class Category extends BaseModel
     protected $hidden = [
         'created_at',
         'updated_at',
+        'deleted_at',
         'company_id',
+        #'pivot',
     ];
 
     public function questions()

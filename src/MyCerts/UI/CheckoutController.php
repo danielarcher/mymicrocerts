@@ -97,7 +97,7 @@ class CheckoutController extends Controller
 
     public function populate($companyId)
     {
-        $files = glob(__DIR__ . '/../../../lumen/storage/app/questions/*');
+        $files = glob(__DIR__ . '/../../../lumen/resources/questions/*');
         foreach ($files as $file) {
             $this->importFile($file, $companyId);
         }

@@ -76,16 +76,19 @@ $router->group(['prefix' => 'api', 'middleware' => ['jsonApiContentType','thrott
         $router->group(['middleware' => 'companyOwner'], function (Router $router) {
             $router->post('exam', 'ExamController@create');
             $router->delete('exam/{id}', 'ExamController@delete');
+            $router->patch('exam/{id}', 'ExamController@patch');
 
             $router->get('candidate', 'CandidateController@list');
             $router->post('candidate', 'CandidateController@create');
             $router->get('candidate/{id}', 'CandidateController@findOne');
             $router->delete('candidate/{id}', 'CandidateController@delete');
+            $router->patch('candidate/{id}', 'CandidateController@patch');
 
             $router->get('category', 'CategoryController@list');
             $router->post('category', 'CategoryController@create');
             $router->get('category/{id}', 'CategoryController@findOne');
             $router->delete('category/{id}', 'CategoryController@delete');
+            $router->patch('category/{id}', 'CategoryController@patch');
 
             $router->post('plans/{id}/buy', 'PlansController@buy');
 
@@ -93,6 +96,7 @@ $router->group(['prefix' => 'api', 'middleware' => ['jsonApiContentType','thrott
             $router->post('question', 'QuestionController@create');
             $router->get('question/{id}', 'QuestionController@findOne');
             $router->delete('question/{id}', 'QuestionController@delete');
+            $router->patch('question/{id}', 'QuestionController@patch');
 
             $router->get('/contract', 'CompaniesController@contracts');
             $router->get('/statistics', function () {
