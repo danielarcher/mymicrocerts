@@ -48,7 +48,8 @@ class ExamController extends BaseController
      */
     public function list(Request $request)
     {
-        return response()->json(Exam::where('company_id', Auth::user()->company_id)->paginate(self::DEFAULT_PAGINATION_LENGHT));
+        $company = $this->retrieveCompany($request);
+        return response()->json(Exam::where(['company_id' => $company->id])->paginate(self::DEFAULT_PAGINATION_LENGHT));
     }
 
     /**

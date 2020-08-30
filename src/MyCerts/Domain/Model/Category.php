@@ -2,6 +2,9 @@
 
 namespace MyCerts\Domain\Model;
 
+/**
+ * @method static where(array $array)
+ */
 class Category extends BaseModel
 {
     protected $table = 'category';

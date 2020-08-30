@@ -3,6 +3,7 @@
 namespace MyCerts\UI;
 
 use App\Http\Controllers\Controller;
+use Faker\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use MyCerts\Application\CandidateHandler;
@@ -10,6 +11,7 @@ use MyCerts\Application\CompanyHandler;
 use MyCerts\Application\PaymentHandler;
 use MyCerts\Application\QuestionHandler;
 use MyCerts\Domain\Model\Category;
+use MyCerts\Domain\Model\Exam;
 use MyCerts\Domain\Roles;
 use Symfony\Component\Yaml\Yaml;
 
@@ -95,13 +97,28 @@ class CheckoutController extends Controller
         return response()->json(compact('company', 'candidate', 'contract'), Response::HTTP_CREATED);
     }
 
-    public function populate($companyId)
+    public function populate(string $companyId)
     {
         $files = glob(__DIR__ . '/../../../lumen/resources/questions/*');
         foreach ($files as $file) {
             $this->importFile($file, $companyId);
         }
-        return response()->json('',Response::HTTP_NO_CONTENT);
+        $category = Category::where(['company_id' => $companyId])->first();
+        $exam     = new Exam([
+            "company_id"               => $companyId,
+            "title"                    => 'Exam 1',
+            "description"              => Factory::create()->paragraph,
+            "visible_external"         => false,
+            "success_score_in_percent" => 100,
+            "questions_per_categories" => [
+                [
+                    "category_id"           => $category->id,
+                    "quantity_of_questions" => Factory::create()->numberBetween(1, 4)
+                ]
+            ]
+        ]);
+        $exam->save();
+        return response()->json('', Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -119,7 +136,7 @@ class CheckoutController extends Controller
         $category->save();
 
         foreach ($yaml['questions'] as $question) {
-            $options   = array_map(function ($array) {
+            $options = array_map(function ($array) {
                 return [
                     'text'    => $array['value'],
                     'correct' => $array['correct']
