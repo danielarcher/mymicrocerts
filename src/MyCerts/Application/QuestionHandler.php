@@ -91,7 +91,9 @@ class QuestionHandler
     public function delete($companyId, $questionId)
     {
         $question = Question::where(['id' => $questionId, 'company_id' => $companyId])->first();
-        $question->options()->delete();
-        $question->delete();
+        if ($question) {
+            $question->options()->delete();
+            $question->delete();
+        }
     }
 }

@@ -3,11 +3,13 @@
 use App\Http\Middleware\AdminOnly;
 use App\Http\Middleware\CompanyOwnerOnly;
 use App\Http\Middleware\JsonApiContentType;
+use App\Http\Middleware\LogRequestInfo;
 use GrahamCampbell\Throttle\Http\Middleware\ThrottleMiddleware;
+use GrahamCampbell\Throttle\ThrottleServiceProvider;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
-    dirname(__DIR__), '.env.'.env('APP_ENV', 'production')
+    dirname(__DIR__), '.env.' . env('APP_ENV', 'production')
 ))->bootstrap();
 
 date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
@@ -81,6 +83,7 @@ $app->routeMiddleware([
     'companyOwner'       => CompanyOwnerOnly::class,
     'jsonApiContentType' => JsonApiContentType::class,
     'throttle'           => ThrottleMiddleware::class,
+    'log'                => LogRequestInfo::class
 ]);
 
 /*
@@ -98,7 +101,7 @@ $app->routeMiddleware([
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
-$app->register(\GrahamCampbell\Throttle\ThrottleServiceProvider::class);
+$app->register(ThrottleServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

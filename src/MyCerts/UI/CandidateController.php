@@ -2,16 +2,16 @@
 
 namespace MyCerts\UI;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use MyCerts\Application\CandidateHandler;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Roles;
 
-class CandidateController extends Controller
+class CandidateController extends BaseController
 {
     /**
      * @var CandidateHandler
@@ -34,13 +34,13 @@ class CandidateController extends Controller
     public function create(Request $request)
     {
         $this->validate($request, [
-            'confirm_password' => 'required',
+            'company_id'       => 'uuid',
+            'first_name'       => 'required|string',
+            'last_name'        => 'required|string',
+            'email'            => 'required|email|unique:candidate',
+            'password'         => 'required|string',
+            'confirm_password' => 'required|string',
             'super_user'       => 'bool',
-            'company_id'       => 'required|uuid',
-            'password'         => 'required',
-            'first_name'       => 'required',
-            'last_name'        => 'required',
-            'email'            => 'required|email|unique:candidate'
         ]);
 
         $user = Auth::user();
@@ -54,7 +54,7 @@ class CandidateController extends Controller
         }
 
         $candidate = $this->handler->create(
-            $request->get('company_id'),
+            $this->retrieveCompany($request)->id,
             $request->get('email'),
             $request->get('password'),
             $request->get('first_name'),

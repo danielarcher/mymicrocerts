@@ -18,6 +18,21 @@ class CategoryTest extends TestCase
         $this->seeInDatabase('category', ['name' => $createdCategory, 'deleted_at' => null]);
     }
 
+    public function test_it_should_create_category_with_description_and_icon()
+    {
+        $createdCategory = $this->faker->paragraph;
+        $description     = $this->faker->paragraph;
+
+        $this->json('POST', '/api/category', [
+            "name"        => $createdCategory,
+            "description" => $description,
+            "icon"        => $this->faker->paragraph,
+        ], ['Authorization' => $this->companyToken()]);
+
+        $this->assertResponseCreated();
+        $this->seeInDatabase('category', ['description' => $description, 'deleted_at' => null]);
+    }
+
     public function test_it_should_delete_category()
     {
         $createdCategory = $this->faker->paragraph;
@@ -48,7 +63,9 @@ class CategoryTest extends TestCase
          * create
          */
         $this->json('POST', '/api/category', [
-            "name" => $createdCategory
+            "name" => $createdCategory,
+            "description" => $createdCategory,
+            "icon" => $createdCategory,
         ], ['Authorization' => $this->companyToken()]);
 
         $category = $this->response->getOriginalContent();
@@ -57,12 +74,14 @@ class CategoryTest extends TestCase
          * update
          */
         $updatedName = $this->faker->paragraph;
+        $updatedDescription = $this->faker->paragraph;
         $this->json('PATCH', '/api/category/' . $category->id, [
-            "name" => $updatedName
+            "name" => $updatedName,
+            "description" => $updatedDescription,
         ], ['Authorization' => $this->companyToken()]);
 
         $this->assertResponseOk();
-        $this->seeInDatabase('category', ['id' => $category->id, 'name' => $updatedName, 'deleted_at' => null]);
+        $this->seeInDatabase('category', ['id' => $category->id, 'name' => $updatedName, 'description' => $updatedDescription, 'deleted_at' => null]);
     }
 
 }

@@ -16,7 +16,7 @@
 use Laravel\Lumen\Routing\Router;
 use Symfony\Component\Yaml\Yaml;
 
-$router->group(['middleware' => 'throttle:120,1'], function(Router $router){
+$router->group(['middleware' => ['throttle:120,1','log']], function(Router $router){
     $router->get('/home', function () use ($router) {
         return response()->json([
             'message' => 'Welcome to MyMicroCerts ' . config('mycerts.version'),
@@ -26,7 +26,7 @@ $router->group(['middleware' => 'throttle:120,1'], function(Router $router){
     });
 });
 
-$router->group(['middleware' => ['jsonApiContentType','throttle:60,1']], function (Router $router) {
+$router->group(['middleware' => ['jsonApiContentType','throttle:60,1','log']], function (Router $router) {
 
     /**
      * Login Url
@@ -47,7 +47,7 @@ $router->group(['middleware' => ['jsonApiContentType','throttle:60,1']], functio
     $router->post('link/exam/{id}/finish', ['as' => 'external.finish', 'uses' => 'ExternalExamController@finish']);
 });
 
-$router->group(['prefix' => 'api', 'middleware' => ['jsonApiContentType','throttle:120,1']], function (Router $router) {
+$router->group(['prefix' => 'api', 'middleware' => ['jsonApiContentType','throttle:120,1','log']], function (Router $router) {
     /**
      * No Authentication needed
      */

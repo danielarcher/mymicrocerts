@@ -12,13 +12,14 @@ class Category extends BaseModel
     protected $fillable = [
         'company_id',
         'name',
+        'description',
+        'icon',
     ];
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
         'company_id',
-        #'pivot',
     ];
 
     public function questions()
