@@ -27,6 +27,10 @@ class Company extends BaseModel
     {
         return $this->hasMany(Question::class, 'company_id');
     }
+    public function apiKeys()
+    {
+        return $this->hasMany(ApiKey::class, 'company_id');
+    }
     public function candidates()
     {
         return $this->hasMany(Candidate::class, 'company_id');

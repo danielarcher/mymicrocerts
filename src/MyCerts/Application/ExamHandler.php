@@ -4,6 +4,8 @@ namespace MyCerts\Application;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
+use MyCerts\Domain\Certification;
+use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Category;
 use MyCerts\Domain\Model\Exam;
 use MyCerts\Domain\Model\Question;
@@ -11,6 +13,21 @@ use Ramsey\Uuid\Uuid;
 
 class ExamHandler
 {
+    /**
+     * @var Certification
+     */
+    private Certification $certification;
+
+    public function __construct(Certification $certification)
+    {
+        $this->certification = $certification;
+    }
+
+    public function startExam(string $examId, Candidate $candidate)
+    {
+        return $this->certification->startExam($examId, $candidate);
+    }
+
     /**
      * @param string|null $title
      * @param string|null $description

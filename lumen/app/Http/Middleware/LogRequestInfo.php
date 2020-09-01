@@ -31,7 +31,7 @@ class LogRequestInfo
                 ['statusCode' => $response->status()]
             )
         );
-        
+
         return $response->withHeaders(['Content-Type' => 'application/vnd.api+json']);
     }
 
@@ -41,7 +41,7 @@ class LogRequestInfo
             return [];
         }
         array_walk($data, function (&$value, $key) {
-            if (in_array($key, ['password', 'token'])) {
+            if (in_array($key, ['password', 'token', 'key'])) {
                 $value = '***';
             }
         });

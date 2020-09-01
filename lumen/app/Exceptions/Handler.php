@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\UnauthorizedException;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
+use MyCerts\Domain\Exception\AccessDeniedToThisExam;
+use MyCerts\Domain\Exception\NoAttemptsLeftForThisExam;
+use MyCerts\Domain\Exception\NoCreditsLeft;
+use MyCerts\Domain\Exception\UserAlreadyHaveThisCertification;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
@@ -71,6 +75,19 @@ class Handler extends ExceptionHandler
                 ]
             ], Response::HTTP_NOT_FOUND);
         }
+        if ($exception instanceof NoCreditsLeft) {
+            return $this->error($exception->getMessage(), 0, Response::HTTP_CONFLICT);
+        }
+        if ($exception instanceof UserAlreadyHaveThisCertification) {
+            return $this->error($exception->getMessage(), 0, Response::HTTP_CONFLICT);
+        }
+        if ($exception instanceof NoAttemptsLeftForThisExam) {
+            return $this->error($exception->getMessage(), 0, Response::HTTP_CONFLICT);
+        }
+        if ($exception instanceof AccessDeniedToThisExam) {
+            return $this->error($exception->getMessage(), 0, Response::HTTP_FORBIDDEN);
+        }
+
         if ($exception instanceof ModelNotFoundException) {
             $message = !empty($exception->getMessage()) ? $exception->getMessage() : null;
             return response()->json([
@@ -120,5 +137,24 @@ class Handler extends ExceptionHandler
         }
 
         return parent::render($request, $exception);
+    }
+
+    /**
+     * @param string $message
+     * @param int    $code
+     * @param int    $status
+     *
+     * @return JsonResponse
+     */
+    protected function error(string $message, int $code, int $status): JsonResponse
+    {
+        return response()->json([
+            'errors' => [
+                [
+                    'description' => $message,
+                    'code'        => $code,
+                ]
+            ]
+        ], $status);
     }
 }

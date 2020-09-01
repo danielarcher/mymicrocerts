@@ -171,17 +171,7 @@ class ExamController extends BaseController
      */
     public function start($id, Request $request)
     {
-        $certification = new Certification(new ExamValidator());
-        try {
-            $selectedUser = $this->validateReceivedUser($request);
-            $response     = $certification->startExam($id, $selectedUser);
-        } catch (NoCreditsLeft | UserAlreadyHaveThisCertification | NoAttemptsLeftForThisExam $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
-        } catch (AccessDeniedToThisExam $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_FORBIDDEN);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Exam not found'], Response::HTTP_NOT_FOUND);
-        }
+        $response = $this->handler->startExam($id, $this->validateReceivedUser($request));
 
         return response()->json($response, Response::HTTP_OK);
     }

@@ -74,6 +74,10 @@ $router->group(['prefix' => 'api', 'middleware' => ['jsonApiContentType','thrott
          * Company Owner only
          */
         $router->group(['middleware' => 'companyOwner'], function (Router $router) {
+            $router->get('apikey', 'ApiKeyController@list');
+            $router->post('apikey', 'ApiKeyController@create');
+            $router->delete('apikey/{id}', 'ApiKeyController@revoke');
+
             $router->post('exam', 'ExamController@create');
             $router->delete('exam/{id}', 'ExamController@delete');
             $router->patch('exam/{id}', 'ExamController@patch');
