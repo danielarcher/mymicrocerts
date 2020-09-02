@@ -42,7 +42,7 @@ $router->group(['middleware' => ['jsonApiContentType','throttle:60,1','log']], f
     /**
      * External exam with guest user
      */
-    $router->post('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
+    $router->get('link/exam/{id}', ['as' => 'external.index', 'uses' => 'ExternalExamController@index']);
     $router->post('link/exam/{id}/start', ['as' => 'external.start', 'uses' => 'ExternalExamController@start']);
     $router->post('link/exam/{id}/finish', ['as' => 'external.finish', 'uses' => 'ExternalExamController@finish']);
 });

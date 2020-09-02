@@ -2,6 +2,8 @@
 
 namespace MyCerts\Domain\Model;
 
+use Illuminate\Support\Facades\Log;
+
 class Attempt extends BaseModel
 {
     protected $table = 'attempt';
@@ -34,8 +36,9 @@ class Attempt extends BaseModel
     {
         $score = 0;
         $answers = $this->transformAnswersInAssociativeArray($answers);
-
+        Log::info('answers', $answers);
         foreach ($this->drawnQuestions()->get() as $question) {
+            Log::debug("checking...", ['question_id', $question->id]);
             /** @var Question $question */
             if ($question->isCorrectAnswer($answers[$question->id] ?? [])) {
                 $score++;

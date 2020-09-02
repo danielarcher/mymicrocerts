@@ -132,8 +132,6 @@ class CheckoutController extends Controller
         $category = new Category(array_filter([
             'company_id'  => $companyId,
             'name'        => $yaml['category'],
-            'description' => Factory::create()->sentences,
-            'icon' => Factory::create()->shuffle(['desktop','microchip','mouse','keyboard','database','headphones','memory']),
         ]));
         $category->save();
 

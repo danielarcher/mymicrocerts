@@ -46,7 +46,7 @@ class AuthServiceProvider extends ServiceProvider
         }
 
         Log::debug('x-api-key found on database, looking for candidate');
-        
+
         return Candidate::with('company')->where([
             'company_id' => $apiKey->company_id,
             'role'       => Roles::COMPANY

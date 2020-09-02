@@ -4,6 +4,7 @@ namespace MyCerts\Domain\Model;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @method static where(array $array)
@@ -34,6 +35,7 @@ class Question extends BaseModel
     public function isCorrectAnswer(array $selectedOptions): bool
     {
         sort($selectedOptions);
+        Log::debug('compare selected x correct', ['selected' => $selectedOptions, 'correct' => $this->correctOptionsGrouped()]);
         return $selectedOptions == $this->correctOptionsGrouped();
     }
 

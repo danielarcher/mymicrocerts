@@ -2,6 +2,7 @@
 
 namespace MyCerts\Domain;
 
+use Illuminate\Support\Facades\Log;
 use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
 use MyCerts\Domain\Exception\NoAttemptsLeftForThisExam;
@@ -87,6 +88,12 @@ class ExamValidator
     protected function candidateHasAttemptsLeft(Exam $exam, Candidate $candidate): void
     {
         $currentAttempts = Attempt::where(['candidate_id' => $candidate->id, 'exam_id' => $exam->id])->count();
+        Log::info('Checking if candidate has attempts left', [
+            'candidate_id' => $candidate->id,
+            'exam_id' => $exam->id,
+            'max_attempts' => $exam->max_attempts_per_candidate,
+            'current_attempts' => $currentAttempts,
+        ]);
         if ($currentAttempts >= $exam->max_attempts_per_candidate) {
             throw new NoAttemptsLeftForThisExam();
         }
