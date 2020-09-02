@@ -3,26 +3,21 @@
 namespace MyCerts\UI;
 
 use Exception;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Http\ResponseFactory;
 use MyCerts\Application\ExamHandler;
 use MyCerts\Domain\Certification;
 use MyCerts\Domain\ExamValidator;
-use MyCerts\Domain\Exception\AccessDeniedToThisExam;
 use MyCerts\Domain\Exception\ExamAlreadyFinished;
-use MyCerts\Domain\Exception\NoAttemptsLeftForThisExam;
 use MyCerts\Domain\Exception\NoCreditsLeft;
-use MyCerts\Domain\Exception\UserAlreadyHaveThisCertification;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Exam;
-use Ramsey\Uuid\Uuid;
 
 /**
  * Class ExamController
@@ -179,14 +174,15 @@ class ExamController extends BaseController
     /**
      * @param Request $request
      *
-     * @return Authenticatable|null
+     * @return Model|HasMany|Candidate|object|null
      */
     private function validateReceivedUser(Request $request)
     {
-        if ($request->json('candidate_id') && Auth::user()->isAdmin()) {
-            return Candidate::findOrFail($request->json('candidate_id'));
-        }
-        return Auth::user();
+        return $this
+            ->retrieveCompany($request)
+            ->candidates()
+            ->where(['id' => $request->json('candidate_id')])
+            ->first();
     }
 
     /**
