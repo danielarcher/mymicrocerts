@@ -25,6 +25,14 @@ class Exam extends BaseModel
 {
     protected $table = 'exam';
 
+    protected $casts = [
+        'dynamic_fields' => 'array'
+    ];
+
+    protected $appends = [
+        'categories'
+    ];
+
     protected $fillable = [
         'company_id',
         'title',
@@ -37,6 +45,7 @@ class Exam extends BaseModel
         'private',
         'access_id',
         'access_password',
+        'categories',
     ];
 
     protected $hidden = ['created_at','updated_at','access_password', 'deleted_at'];
@@ -69,5 +78,10 @@ class Exam extends BaseModel
     {
         $scoreInPercent = Percentage::calculate($score, $this->numberOfQuestions());
         return $scoreInPercent >= $this->success_score_in_percent;
+    }
+
+    public function getCategoriesAttribute()
+    {
+        return $this->questionsPerCategory()->get()->map(function($item){return $item->name;})->toArray();
     }
 }
