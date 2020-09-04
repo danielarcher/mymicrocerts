@@ -2,11 +2,10 @@
 
 namespace MyCerts\Domain\Model;
 
-
 use Mattiasgeniar\Percentage\Percentage;
 
 /**
- * @property string company_id
+ * @property string       company_id
  * @property string       title
  * @property string       description
  * @property int          max_time_in_minutes
@@ -26,7 +25,9 @@ class Exam extends BaseModel
     protected $table = 'exam';
 
     protected $casts = [
-        'dynamic_fields' => 'array'
+        'dynamic_fields' => 'array',
+        'custom'         => 'json',
+        'rewards'         => 'json'
     ];
 
     protected $appends = [
@@ -46,23 +47,21 @@ class Exam extends BaseModel
         'access_id',
         'access_password',
         'categories',
+        'custom',
+        'rewards',
     ];
 
-    protected $hidden = ['created_at','updated_at','access_password', 'deleted_at'];
+    protected $hidden = ['created_at', 'updated_at', 'access_password', 'deleted_at'];
 
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function fixedQuestions()
+    public function checkIsApproved(int $score)
     {
-        return $this->belongsToMany(Question::class, 'exam_question');
-    }
-
-    public function questionsPerCategory()
-    {
-        return $this->belongsToMany(Category::class, 'exam_category')->withPivot('quantity_of_questions');
+        $scoreInPercent = Percentage::calculate($score, $this->numberOfQuestions());
+        return $scoreInPercent >= $this->success_score_in_percent;
     }
 
     public function numberOfQuestions()
@@ -74,14 +73,20 @@ class Exam extends BaseModel
         return $this->fixedQuestions()->count() + $sumFromCategories;
     }
 
-    public function checkIsApproved(int $score)
+    public function questionsPerCategory()
     {
-        $scoreInPercent = Percentage::calculate($score, $this->numberOfQuestions());
-        return $scoreInPercent >= $this->success_score_in_percent;
+        return $this->belongsToMany(Category::class, 'exam_category')->withPivot('quantity_of_questions');
+    }
+
+    public function fixedQuestions()
+    {
+        return $this->belongsToMany(Question::class, 'exam_question');
     }
 
     public function getCategoriesAttribute()
     {
-        return $this->questionsPerCategory()->get()->map(function($item){return $item->name;})->toArray();
+        return $this->questionsPerCategory()->get()->map(function ($item) {
+            return $item->name;
+        })->toArray();
     }
 }

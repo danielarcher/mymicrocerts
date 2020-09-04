@@ -29,18 +29,20 @@ class ExamHandler
     }
 
     /**
+     * @param string|null $company_id
      * @param string|null $title
      * @param string|null $description
+     * @param string|null $success_score_in_percent
      * @param int|null    $max_time_in_minutes
      * @param int|null    $max_attempts_per_candidate
-     * @param string|null $success_score_in_percent
      * @param bool|null   $visible_internal
      * @param bool|null   $visible_external
      * @param bool|null   $private
-     * @param string|null $company_id
      * @param string|null $password
      * @param array|null  $fixed_questions
      * @param array|null  $questions_per_categories
+     * @param array|null  $custom
+     * @param array|null  $rewards
      *
      * @return Exam
      */
@@ -56,7 +58,9 @@ class ExamHandler
         ?bool $private,
         ?string $password,
         ?array $fixed_questions,
-        ?array $questions_per_categories
+        ?array $questions_per_categories,
+        ?array $custom,
+        ?array $rewards
     ): Exam {
 
         $exam = new Exam(array_filter([
@@ -69,6 +73,8 @@ class ExamHandler
             'visible_internal'           => $visible_internal,
             'visible_external'           => $visible_external,
             'private'                    => $private,
+            'custom'                     => $custom,
+            'rewards'                    => $rewards,
         ]));
 
         if ($visible_external) {
@@ -104,7 +110,9 @@ class ExamHandler
         ?bool $private,
         ?string $password,
         ?array $fixed_questions,
-        ?array $questions_per_categories
+        ?array $questions_per_categories,
+        ?array $custom,
+        ?array $rewards
     ): Exam {
         /** @var Exam $exam */
         $exam = Exam::where(['id' => $exam_id, 'company_id' => $company_id])->first();
@@ -117,6 +125,8 @@ class ExamHandler
             'visible_internal'           => $visible_internal,
             'visible_external'           => $visible_external,
             'private'                    => $private,
+            'custom'                     => $custom,
+            'rewards'                    => $rewards,
         ]));
 
         if ($visible_external) {

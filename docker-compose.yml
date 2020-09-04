@@ -13,7 +13,7 @@ services:
       APP_ENV: local
 
   mysql:
-    image: mysql
+    image: mysql:8
     container_name: mycerts-mysql
     command: mysqld --default-authentication-plugin=mysql_native_password
     environment:

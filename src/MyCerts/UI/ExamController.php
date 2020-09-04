@@ -72,6 +72,7 @@ class ExamController extends BaseController
 
             'fixed_questions'   => 'array',
             'fixed_questions.*' => 'string',
+            'custom' => 'array',
         ]);
 
         $exam = $this->handler->create(
@@ -86,7 +87,9 @@ class ExamController extends BaseController
             $request->json('private'),
             $request->json('password'),
             $request->json('fixed_questions'),
-            $request->json('questions_per_categories')
+            $request->json('questions_per_categories'),
+            $request->json('custom'),
+            $request->json('rewards')
         );
 
         return response()->json($exam, Response::HTTP_CREATED);
@@ -125,15 +128,17 @@ class ExamController extends BaseController
             $id,
             $request->json('title'),
             $request->json('description'),
-            $request->json('max_time_in_minutes', 60),
-            $request->json('max_attempts_per_candidate', 3),
+            $request->json('max_time_in_minutes'),
+            $request->json('max_attempts_per_candidate'),
             $request->json('success_score_in_percent'),
             $request->json('visible_internal'),
             $request->json('visible_external'),
             $request->json('private'),
             $request->json('password'),
             $request->json('fixed_questions'),
-            $request->json('questions_per_categories')
+            $request->json('questions_per_categories'),
+            $request->json('custom'),
+            $request->json('rewards')
         );
 
         return response()->json($exam);
@@ -203,7 +208,7 @@ class ExamController extends BaseController
             return response()->json(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
         }
 
-        return response()->json($response, Response::HTTP_OK);
+        return response()->json($response);
     }
 
     /**

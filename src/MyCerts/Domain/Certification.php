@@ -152,6 +152,7 @@ class Certification
             'exam_id'          => $attempt->exam_id,
             'candidate_id'     => $attempt->candidate_id,
             'score_in_percent' => $attempt->score_in_percent,
+            'rewards'          => $attempt->exam()->first()->rewards,
         ]);
         $certificate->save();
         return $certificate;

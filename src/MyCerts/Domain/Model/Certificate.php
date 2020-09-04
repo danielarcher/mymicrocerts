@@ -2,15 +2,22 @@
 
 namespace MyCerts\Domain\Model;
 
+/**
+ * @property mixed exam_id
+ * @property mixed candidate_id
+ * @property mixed score_in_percent
+ */
 class Certificate extends BaseModel
 {
     protected $table = 'certificate';
 
-    protected $fillable = [
-        'exam_id',
-        'candidate_id',
-        'score_in_percent',
+    protected $guarded = [];
+
+    protected $casts = [
+        'rewards' => 'json'
     ];
+
+    protected $hidden = ['deleted_at','updated_at','exam_id'];
 
     public function exam()
     {
