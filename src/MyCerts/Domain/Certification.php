@@ -46,6 +46,22 @@ class Certification
         $exam = Exam::with('company')->findOrFail($examId);
 
         /**
+         * Check if candidate already started this exam
+         */
+        $attempt = Attempt::where(['exam_id' => $examId, 'candidate_id' => $candidate->id, 'finished_at' => null])->first();
+        if ($attempt) {
+            return [
+                'attempt'   => $attempt
+                    ->makeHidden('score_in_percent')
+                    ->makeHidden('score_absolute')
+                    ->makeHidden('finished_at')
+                    ->makeHidden('approved'),
+                'exam'      => $exam,
+                'questions' => $attempt->drawnQuestions()->with('options')->get()
+            ];
+        }
+
+        /**
          * Validate user can proceed
          */
         $this->validator->assertExamCanBeStarted($exam, $candidate);
@@ -134,9 +150,9 @@ class Certification
     public function saveAttempt(Attempt $attempt, int $score, Exam $exam): Attempt
     {
         $attempt->score_absolute   = $score;
-        $attempt->score_in_percent = Percentage::calculate($score, $exam->numberOfQuestions());
+        $attempt->score_in_percent = ($score == 0) ? 0 : Percentage::calculate($score, $exam->numberOfQuestions());
         $attempt->finished_at      = new \DateTimeImmutable();
-        $attempt->approved         = $exam->checkIsApproved($score);
+        $attempt->approved         = ($score == 0) ? false : $exam->checkIsApproved($score);
         $attempt->save();
 
         return $attempt;

@@ -164,6 +164,68 @@ class PerformExamTest extends TestCase
         $this->assertInstanceOf(Certificate::class, $certificate);
     }
 
+    public function test_it_should_be_able_to_continue_exam_after_starting()
+    {
+        /**
+         * Create exam
+         */
+        $this->json('POST',
+            '/api/exam',
+            [
+                "title"                    => $this->faker->jobTitle,
+                "description"              => $this->faker->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "questions_per_categories" => [
+                    [
+                        "category_id"           => $this->category->id,
+                        "quantity_of_questions" => 1
+                    ]
+                ]
+            ],
+            [
+                'Authorization' => $this->companyToken()
+            ]
+        );
+        $exam = $this->response->getOriginalContent();
+
+        /**
+         * Start Exam, first time
+         */
+        $this->json(
+            'POST',
+            "/api/exam/{$exam->id}/start",
+            [
+                'candidate_id' => $this->candidate->id
+            ],
+            [
+                'Authorization' => $this->companyToken()
+            ]
+        );
+
+        $dataFirstRequest = json_decode($this->response->content(), true);
+
+        /**
+         * Start Exam, first time
+         */
+        $this->json(
+            'POST',
+            "/api/exam/{$exam->id}/start",
+            [
+                'candidate_id' => $this->candidate->id
+            ],
+            [
+                'Authorization' => $this->companyToken()
+            ]
+        );
+
+        $dataSecondRequest = json_decode($this->response->content(), true);
+
+        $this->assertEquals($dataFirstRequest['attempt'], $dataSecondRequest['attempt']);
+        $this->assertEquals($dataFirstRequest['exam'], $dataSecondRequest['exam']);
+        $this->assertEquals($dataFirstRequest['questions'], $dataSecondRequest['questions']);
+    }
+
     public function test_it_should_not_be_approved_for_wrong_answer()
     {
         /**
@@ -233,62 +295,6 @@ class PerformExamTest extends TestCase
         $attemptFinished    = $examFinishResponse['attempt'];
 
         $this->assertFalse($attemptFinished->approved);
-    }
-
-    public function test_it_should_block_when_the_same_candidate_try_more_then_configured()
-    {
-        /**
-         * Create exam
-         */
-        $this->json('POST',
-            '/api/exam',
-            [
-                "title"                      => $this->faker->jobTitle,
-                "description"                => $this->faker->paragraph,
-                "visible_external"           => false,
-                "max_attempts_per_candidate" => 1,
-                "success_score_in_percent"   => 100,
-                "questions_per_categories"   => [
-                    [
-                        "category_id"           => $this->category->id,
-                        "quantity_of_questions" => 1
-                    ]
-                ]
-            ],
-            [
-                'Authorization' => $this->companyToken()
-            ]
-        );
-        $exam = $this->response->getOriginalContent();
-
-        /**
-         * Start Exam First time
-         */
-        $this->json(
-            'POST',
-            "/api/exam/{$exam->id}/start",
-            [
-                'candidate_id' => $this->candidate->id
-            ],
-            [
-                'Authorization' => $this->companyToken()
-            ]
-        );
-
-        /**
-         * Start Exam Second time
-         */
-        $this->json(
-            'POST',
-            "/api/exam/{$exam->id}/start",
-            [
-                'candidate_id' => $this->candidate->id
-            ],
-            [
-                'Authorization' => $this->companyToken()
-            ]
-        );
-        $this->assertResponseStatus(Response::HTTP_CONFLICT);
     }
 
     public function test_should_not_create_exam_with_non_existing_questions()

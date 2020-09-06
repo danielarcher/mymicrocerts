@@ -2,11 +2,20 @@
 
 namespace MyCerts\Domain\Model;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class Attempt extends BaseModel
 {
     protected $table = 'attempt';
+
+    protected $casts = [
+        'dynamic_fields' => 'array',
+    ];
+
+    protected $appends = [
+        'remaining_time_in_seconds'
+    ];
 
     protected $fillable = [
         'exam_id',
@@ -45,6 +54,13 @@ class Attempt extends BaseModel
             }
         }
         return $score;
+    }
+
+    public function getRemainingTimeInSecondsAttribute()
+    {
+        $limitDate = Carbon::parse($this->created_at)->addMinutes($this->exam()->first()->max_time_in_minutes);
+
+        return Carbon::now()->diffInSeconds($limitDate);
     }
 
     protected function transformAnswersInAssociativeArray($answers): array
