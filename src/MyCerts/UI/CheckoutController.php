@@ -81,7 +81,8 @@ class CheckoutController extends Controller
             $request->json('user.password'),
             $request->json('user.first_name'),
             $request->json('user.last_name'),
-            Roles::COMPANY
+            Roles::COMPANY,
+            $request->json('user.custom')
         );
 
         $contract = $this->paymentHandler->charge(

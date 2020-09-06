@@ -10,6 +10,7 @@ use Ramsey\Uuid\Uuid;
  * @property string id
  * @property string created_at
  * @property string updated_at
+ * @property string deleted_at
  **/
 class BaseModel extends Model
 {

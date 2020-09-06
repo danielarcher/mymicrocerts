@@ -59,7 +59,8 @@ class CandidateController extends BaseController
             $request->get('password'),
             $request->get('first_name'),
             $request->get('last_name'),
-            $role
+            $role,
+            $request->get('custom')
         );
 
         return response()->json($candidate, Response::HTTP_CREATED);
@@ -101,5 +102,21 @@ class CandidateController extends BaseController
         Candidate::find($id)->certificates()->delete();
         Candidate::destroy($id);
         return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    public function patch(string $id, Request $request)
+    {
+
+        $candidate = $this->handler->patch(
+            $id,
+            $this->retrieveCompany($request)->id,
+            $request->get('email'),
+            $request->get('password'),
+            $request->get('first_name'),
+            $request->get('last_name'),
+            $request->get('custom')
+        );
+
+        return $candidate;
     }
 }

@@ -22,6 +22,7 @@ class CategoryController extends BaseController
             'name'        => 'required|string',
             'description' => 'string',
             'icon'        => 'string',
+            'custom'      => 'array',
         ]);
 
         $company = $this->retrieveCompany($request);
@@ -31,6 +32,7 @@ class CategoryController extends BaseController
             'name'        => $request->json('name'),
             'description' => $request->json('description'),
             'icon'        => $request->json('icon'),
+            'custom'      => $request->json('custom'),
         ]));
 
         $entity->save();
@@ -44,14 +46,16 @@ class CategoryController extends BaseController
             'name'        => 'string',
             'description' => 'string',
             'icon'        => 'string',
+            'custom'      => 'array',
         ]);
 
         $company  = $this->retrieveCompany($request);
-        $category = Category::where(['id' => $id, 'company_id' => $company->id])->first();
+        $category = Category::where(['id' => $id, 'company_id' => $company->id])->firstOrFail();
         $category->fill(array_filter([
             'name'        => $request->json('name'),
             'description' => $request->json('description'),
             'icon'        => $request->json('icon'),
+            'custom'      => $request->json('custom'),
         ]));
         $category->save();
 

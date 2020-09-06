@@ -18,6 +18,44 @@ class CategoryTest extends TestCase
         $this->seeInDatabase('category', ['name' => $createdCategory, 'deleted_at' => null]);
     }
 
+    public function test_it_should_create_category_with_custom_attributes()
+    {
+        $createdCategory = $this->faker->paragraph;
+
+        $this->json('POST', '/api/category', [
+            "name" => $createdCategory,
+            "custom" => [
+                'myattr' => 123
+            ],
+        ], ['Authorization' => $this->companyToken()]);
+
+        $this->assertResponseCreated();
+        $this->seeInDatabase('category', ['name' => $createdCategory,'custom->myattr'=>123, 'deleted_at' => null]);
+    }
+
+    public function test_it_should_update_custom_attribute()
+    {
+        $createdCategory = $this->faker->paragraph;
+
+        $this->json('POST', '/api/category', [
+            "name" => $createdCategory,
+            "custom" => [
+                'myattr' => 123
+            ],
+        ], ['Authorization' => $this->companyToken()]);
+        $category = $this->response->getOriginalContent();
+
+        $this->json('PATCH', '/api/category/'.$category->id, [
+            "custom" => [
+                'color' => 'red'
+            ],
+        ], ['Authorization' => $this->companyToken()]);
+
+        $this->assertResponseOk();
+        $this->notSeeInDatabase('category', ['name' => $createdCategory,'custom->myattr'=>123, 'deleted_at' => null]);
+        $this->seeInDatabase('category', ['name' => $createdCategory,'custom->color'=>'red', 'deleted_at' => null]);
+    }
+
     public function test_it_should_create_category_with_description_and_icon()
     {
         $createdCategory = $this->faker->paragraph;

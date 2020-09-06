@@ -28,15 +28,11 @@ class Candidate extends BaseModel implements AuthenticatableContract, Authorizab
 
     protected $table = 'candidate';
 
-    protected $fillable = [
-        'company_id',
-        'email',
-        'password',
-        'first_name',
-        'last_name',
-        'active',
-        'role',
+    protected $casts = [
+        'custom' => ' json'
     ];
+
+    protected $guarded = [];
 
     protected $hidden = ['created_at','updated_at', 'active', 'password', 'role', 'verified', 'deleted_at'];
 
