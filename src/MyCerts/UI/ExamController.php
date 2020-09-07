@@ -153,11 +153,7 @@ class ExamController extends BaseController
     public function findOne($id)
     {
         /** @var Exam $exam */
-        try {
-            $exam = Exam::with('questionsPerCategory', 'fixedQuestions')->find($id);
-        } catch (Exception $e) {
-            return response($e);
-        }
+        $exam = Exam::with('questionsPerCategory', 'fixedQuestions')->findOrFail($id);
         $exam->numberOfQuestions = $exam->numberOfQuestions();
         return response()->json($exam);
     }
@@ -172,6 +168,19 @@ class ExamController extends BaseController
     public function start($id, Request $request)
     {
         $response = $this->handler->startExam($id, $this->validateReceivedUser($request));
+
+        return response()->json($response, Response::HTTP_OK);
+    }
+
+    /**
+     * @param         $id
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function statistics($id, Request $request)
+    {
+        $response = $this->handler->statistics($id, $this->retrieveCompany($request));
 
         return response()->json($response, Response::HTTP_OK);
     }

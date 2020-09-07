@@ -5,6 +5,9 @@ namespace MyCerts\Domain\Model;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * @property mixed finished_at
+ */
 class Attempt extends BaseModel
 {
     protected $table = 'attempt';
@@ -41,19 +44,14 @@ class Attempt extends BaseModel
         return $this->belongsToMany(Question::class, 'attempt_drawn_questions');
     }
 
-    public function calculateScore(array $answers): int
+    public function calculateScore(): int
     {
-        $score = 0;
-        $answers = $this->transformAnswersInAssociativeArray($answers);
-        Log::info('answers', $answers);
-        foreach ($this->drawnQuestions()->get() as $question) {
-            Log::debug("checking...", ['question_id', $question->id]);
-            /** @var Question $question */
-            if ($question->isCorrectAnswer($answers[$question->id] ?? [])) {
-                $score++;
-            }
+        foreach ($this->drawnQuestions()->withPivot(['correct_answer','received_answer'])->get() as $question) {
+            $isCorrect = $question->pivot->correct_answer == $question->pivot->received_answer;
+            $this->drawnQuestions()->updateExistingPivot($question->id, ['is_correct' => $isCorrect]);
         }
-        return $score;
+
+        return $this->drawnQuestions()->wherePivot('is_correct', '=', true)->count();
     }
 
     public function getRemainingTimeInSecondsAttribute()
@@ -61,6 +59,16 @@ class Attempt extends BaseModel
         $limitDate = Carbon::parse($this->created_at)->addMinutes($this->exam()->first()->max_time_in_minutes);
 
         return Carbon::now()->diffInSeconds($limitDate);
+    }
+
+    public function timeForCompletion()
+    {
+        return Carbon::parse($this->created_at)->diffInSeconds(Carbon::parse($this->finished_at));
+    }
+
+    public function timeForCompletion2()
+    {
+        return $this->drawnQuestions();
     }
 
     protected function transformAnswersInAssociativeArray($answers): array

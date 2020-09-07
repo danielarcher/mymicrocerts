@@ -78,6 +78,11 @@ class Exam extends BaseModel
         return $this->belongsToMany(Category::class, 'exam_category')->withPivot('quantity_of_questions');
     }
 
+    public function attempts()
+    {
+        return $this->hasMany(Attempt::class, 'exam_id');
+    }
+
     public function fixedQuestions()
     {
         return $this->belongsToMany(Question::class, 'exam_question');

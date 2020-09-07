@@ -71,7 +71,10 @@ class Certification
             'candidate_id' => $candidate->id,
         ]);
         $attempt->save();
-        $attempt->drawnQuestions()->sync($this->drawQuestionsForExam($exam));
+        foreach ($this->drawQuestionsForExam($exam) as $drawnQuestion) {
+            $question = Question::find($drawnQuestion);
+            $attempt->drawnQuestions()->attach($question, ['correct_answer' => json_encode($question->correctOptionsGrouped())]);
+        }
 
         /**
          * Withdraw one credit
@@ -130,7 +133,9 @@ class Certification
 
         $this->validator->assertExamCanBeFinished($exam, $attempt);
 
-        $score    = $attempt->calculateScore($answers);
+        $this->attachAnswersToAttempt($attempt, $answers);
+
+        $score    = $attempt->calculateScore();
         $attempt  = $this->saveAttempt($attempt, $score, $exam);
         $response = ['attempt' => $attempt];
 
@@ -172,5 +177,12 @@ class Certification
         ]);
         $certificate->save();
         return $certificate;
+    }
+
+    private function attachAnswersToAttempt(Attempt $attempt, array $answers)
+    {
+        foreach ($answers as $answerId => $answer) {
+            $attempt->drawnQuestions()->updateExistingPivot($answer['question_id'], ['received_answer' => json_encode($answer['selected_option_ids'])]);
+        }
     }
 }

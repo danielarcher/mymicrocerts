@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use MyCerts\Domain\Certification;
 use MyCerts\Domain\Model\Candidate;
 use MyCerts\Domain\Model\Category;
+use MyCerts\Domain\Model\Company;
 use MyCerts\Domain\Model\Exam;
 use MyCerts\Domain\Model\Question;
 use Ramsey\Uuid\Uuid;
@@ -97,6 +98,32 @@ class ExamHandler
         return $exam;
     }
 
+    protected function assertQuestionsExists(array $questionIDs)
+    {
+        foreach ($questionIDs as $id) {
+            if (!Question::find($id)) {
+                throw new ModelNotFoundException('Question not found');
+            }
+        }
+    }
+
+    protected function assertQuantityIsFillable(array $questionsPerCategory)
+    {
+        foreach ($questionsPerCategory as $categoryArray) {
+            $categoryArray['category_id'];
+            $categoryArray['quantity_of_questions'];
+
+            $categoryCollection = Category::find($categoryArray['category_id']);
+            if (!$categoryCollection) {
+                throw new ModelNotFoundException('Category not found');
+            }
+
+            if ($categoryCollection->first()->questions()->count() < $categoryArray['quantity_of_questions']) {
+                throw new ModelNotFoundException('Current question count is not sufficient');
+            }
+        }
+    }
+
     public function update(
         string $company_id,
         string $exam_id,
@@ -149,29 +176,23 @@ class ExamHandler
         return $exam;
     }
 
-    protected function assertQuestionsExists(array $questionIDs)
+    public function statistics($id, Company $company)
     {
-        foreach ($questionIDs as $id) {
-            if (!Question::find($id)) {
-                throw new ModelNotFoundException('Question not found');
-            }
-        }
-    }
-
-    protected function assertQuantityIsFillable(array $questionsPerCategory)
-    {
-        foreach ($questionsPerCategory as $categoryArray) {
-            $categoryArray['category_id'];
-            $categoryArray['quantity_of_questions'];
-
-            $categoryCollection = Category::find($categoryArray['category_id']);
-            if (!$categoryCollection) {
-                throw new ModelNotFoundException('Category not found');
-            }
-
-            if ($categoryCollection->first()->questions()->count() < $categoryArray['quantity_of_questions']) {
-                throw new ModelNotFoundException('Current question count is not sufficient');
-            }
-        }
+        /** @var Exam $exam */
+        $exam = $company->exams()->findOrFail($id);
+        return [
+            'attempts_performed'         => $exam->attempts()->count(),
+            'average_score_in_percent'   => $exam->attempts()->average('score_in_percent'),
+            'average_score_absolute'     => $exam->attempts()->average('score_absolute'),
+            'total_of_approved'          => $exam->attempts()->sum('approved'),
+            'average_time_for_completion' => $exam->attempts()->whereNotNull('approved')->get()->map(function($attempt) {
+                return $attempt->timeForCompletion();
+            })->collect()->average(),
+            'byCategories' => collect($exam->categories)->map(function($category) use ($exam) {
+                return [$category => [
+                    $exam->attempts()->where()
+                ]];
+            })
+        ];
     }
 }
