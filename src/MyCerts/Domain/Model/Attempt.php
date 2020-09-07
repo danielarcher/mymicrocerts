@@ -66,11 +66,6 @@ class Attempt extends BaseModel
         return Carbon::parse($this->created_at)->diffInSeconds(Carbon::parse($this->finished_at));
     }
 
-    public function timeForCompletion2()
-    {
-        return $this->drawnQuestions();
-    }
-
     protected function transformAnswersInAssociativeArray($answers): array
     {
         $return = null;

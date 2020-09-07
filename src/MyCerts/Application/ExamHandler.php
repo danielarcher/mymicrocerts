@@ -187,12 +187,7 @@ class ExamHandler
             'total_of_approved'          => $exam->attempts()->sum('approved'),
             'average_time_for_completion' => $exam->attempts()->whereNotNull('approved')->get()->map(function($attempt) {
                 return $attempt->timeForCompletion();
-            })->collect()->average(),
-            'byCategories' => collect($exam->categories)->map(function($category) use ($exam) {
-                return [$category => [
-                    $exam->attempts()->where()
-                ]];
-            })
+            })->collect()->average()
         ];
     }
 }
