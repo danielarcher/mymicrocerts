@@ -58,7 +58,7 @@ class Attempt extends BaseModel
     {
         $limitDate = Carbon::parse($this->created_at)->addMinutes($this->exam()->first()->max_time_in_minutes);
 
-        return Carbon::now()->diffInSeconds($limitDate);
+        return Carbon::now()->diffInSeconds($limitDate, false);
     }
 
     public function timeForCompletion()

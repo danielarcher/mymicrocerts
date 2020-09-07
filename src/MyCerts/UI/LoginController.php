@@ -45,6 +45,6 @@ class LoginController extends Controller
         ];
         $jwt = JWT::encode($tokenData, env('JWT_SECRET'),'HS256', Hash::make($candidate->password));
 
-        return response()->json(['token' => $jwt], Response::HTTP_OK);
+        return response()->json(['token' => $jwt, 'id' => $candidate->id], Response::HTTP_OK);
     }
 }

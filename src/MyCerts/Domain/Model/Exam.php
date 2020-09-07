@@ -43,6 +43,8 @@ class Exam extends BaseModel
         'success_score_in_percent',
         'visible_internal',
         'visible_external',
+        'questions_per_categories',
+        'fixed_questions',
         'private',
         'access_id',
         'access_password',

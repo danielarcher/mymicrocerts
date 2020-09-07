@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use MyCerts\Application\CandidateHandler;
 use MyCerts\Application\CompanyHandler;
+use MyCerts\Application\ExamHandler;
 use MyCerts\Application\PaymentHandler;
 use MyCerts\Application\QuestionHandler;
 use MyCerts\Domain\Model\Category;
@@ -33,17 +34,23 @@ class CheckoutController extends Controller
      * @var QuestionHandler
      */
     private QuestionHandler $questionHandler;
+    /**
+     * @var ExamHandler
+     */
+    private ExamHandler $examHandler;
 
     public function __construct(
         CompanyHandler $companyHandler,
         CandidateHandler $candidateHandler,
         PaymentHandler $paymentHandler,
-        QuestionHandler $questionHandler
+        QuestionHandler $questionHandler,
+        ExamHandler $examHandler
     ) {
         $this->companyHandler   = $companyHandler;
         $this->candidateHandler = $candidateHandler;
         $this->paymentHandler   = $paymentHandler;
         $this->questionHandler  = $questionHandler;
+        $this->examHandler = $examHandler;
     }
 
     public function payment(Request $request)
@@ -104,21 +111,49 @@ class CheckoutController extends Controller
         foreach ($files as $file) {
             $this->importFile($file, $companyId);
         }
-        $category = Category::where(['company_id' => $companyId])->first();
-        $exam     = new Exam([
-            "company_id"               => $companyId,
-            "title"                    => 'Exam 1',
-            "description"              => Factory::create()->paragraph,
-            "visible_external"         => false,
-            "success_score_in_percent" => 100,
-            "questions_per_categories" => [
+        $categories = Category::where(['company_id' => $companyId])->get();
+
+        foreach ($categories as $category) {
+            $payload = [
+                "company_id"               => $companyId,
+                "title"                    => 'PHP: ' . $category->name,
+                "description"              => Factory::create()->paragraph,
+                "visible_external"         => false,
+                "success_score_in_percent" => 100,
+                "max_time_in_minutes"      => 5,
+                "questions_per_categories" => [
+                    [
+                        "category_id"           => $category->id,
+                        "quantity_of_questions" => Factory::create()->numberBetween(1, 4)
+                    ]
+                ],
+            ];
+            $this->examHandler->create(
+                $companyId,
+                'PHP: ' . $category->name,
+                Factory::create()->paragraph,
+                100,
+                5,
+                999,
+                true,
+                false,
+                false,
+                null,
+                null,
                 [
-                    "category_id"           => $category->id,
-                    "quantity_of_questions" => Factory::create()->numberBetween(1, 4)
+                    [
+                        "category_id"           => $category->id,
+                        "quantity_of_questions" => Factory::create()->numberBetween(1, 4)
+                    ]
+                ],
+                null,
+                [
+                    'badge_name' => 'PHP '.$category->name.' Jedi',
+                    'image' => Factory::create()->imageUrl()
                 ]
-            ]
-        ]);
-        $exam->save();
+            );
+        }
+
         return response()->json('', Response::HTTP_NO_CONTENT);
     }
 
@@ -131,8 +166,8 @@ class CheckoutController extends Controller
         $yaml = Yaml::parseFile($file);
 
         $category = new Category(array_filter([
-            'company_id'  => $companyId,
-            'name'        => $yaml['category'],
+            'company_id' => $companyId,
+            'name'       => $yaml['category'],
         ]));
         $category->save();
 

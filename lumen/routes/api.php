@@ -16,6 +16,10 @@
 use Laravel\Lumen\Routing\Router;
 use Symfony\Component\Yaml\Yaml;
 
+$router->get('/admin', function() use ($router) {
+    return view('components.admin');
+});
+
 $router->group(['middleware' => ['throttle:120,1','log']], function(Router $router){
     $router->get('/home', function () use ($router) {
         return response()->json([
