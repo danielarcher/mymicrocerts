@@ -15,8 +15,13 @@ class Category extends BaseModel
 
     protected $guarded = [];
 
+    protected $appends = [
+        'questions_count'
+    ];
+
     protected $casts = [
-        'custom' => 'json'
+        'dynamic_fields' => 'array',
+        'custom'         => 'json',
     ];
 
     protected $hidden = [
@@ -29,5 +34,10 @@ class Category extends BaseModel
     public function questions()
     {
         return $this->belongsToMany(Question::class, 'question_category');
+    }
+
+    public function getQuestionsCountAttribute()
+    {
+        return $this->questions()->count();
     }
 }

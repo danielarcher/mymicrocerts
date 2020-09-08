@@ -56,7 +56,7 @@ class ExamController extends BaseController
     public function create(Request $request)
     {
         $this->validate($request, [
-            'title'                      => 'required|unique:exam|string',
+            'title'                      => 'required|string',
             'description'                => 'required|string',
             'success_score_in_percent'   => 'required|int',
             'company_id'                 => 'uuid',

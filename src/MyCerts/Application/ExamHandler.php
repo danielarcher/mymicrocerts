@@ -64,6 +64,13 @@ class ExamHandler
         ?array $rewards
     ): Exam {
 
+        if ($fixed_questions) {
+            $this->assertQuestionsExists($fixed_questions);
+        }
+        if ($questions_per_categories) {
+            $this->assertQuantityIsFillable($questions_per_categories);
+        }
+
         $exam = new Exam(array_filter([
             'company_id'                 => $company_id,
             'title'                      => $title,
@@ -118,7 +125,7 @@ class ExamHandler
                 throw new ModelNotFoundException('Category not found');
             }
 
-            if ($categoryCollection->first()->questions()->count() < $categoryArray['quantity_of_questions']) {
+            if ($categoryCollection->questions()->count() < $categoryArray['quantity_of_questions']) {
                 throw new ModelNotFoundException('Current question count is not sufficient');
             }
         }
