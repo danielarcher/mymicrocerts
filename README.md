@@ -92,3 +92,7 @@ POST:/api/exam/{exam_id}/finish
     ]
 }
 ```
+
+# Tests
+Full test suit running
+![tests](test-suit.jpg)
