@@ -1,5 +1,11 @@
 # My Micro certs
 
+With MyMicroCerts we provide to many companies the ability to perform evaluations to their employees using a secure, fast and reliable api.
+
+In this first release we have the following features.
+- Company management
+- 
+
 next release:
 - adicionar categorias (id/empresa/nome)
 - adicionar vinculo entre categorias e perguntas, uma pergunta pode ter apenas 1 categoria
