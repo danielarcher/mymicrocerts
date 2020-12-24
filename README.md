@@ -22,18 +22,73 @@ The diagram to understand the relation of the objects inside MyMicroCerts
 ### Entity Relationship Diagram
 ![database diagram](database.png "Database relations")
 
-exemple of questions
+# Payloads and api examples    
+
+The full api list you can see on the postman collection attached to this project:  
+[postman collection json](api.postman_collection.json "postman collection")
+
+POST:/api/question
 ```json
 {
-	"questions": [
-		"804644557-804644557-804644557",
-		"274313233-274313233-274313233",
-		"134600426-134600426-134600426"
-	],
+	"description": "{{$randomLoremParagraph}}",
 	"categories": [
-		{"id": "1722258350-1722258350-1722258350", "quantity": 8},
-		{"id": "1056008808-1056008808-1056008808", "quantity": 6},
-		{"id": "2056308422-2056308422-2056308422", "quantity": 3}
+		"{{category-id}}"
+	],
+	"options": [
+		{
+			"text": "true-{{$randomLoremSentence}}",
+			"correct": true
+		},
+		{
+			"text": "{{$randomLoremSentence}}"
+		},
+		{
+			"text": "{{$randomLoremSentence}}"
+		}
 	]
+}
+```
+
+POST:/api/exam
+```json
+{
+	"company_id": "{{company-id}}",
+	"title": "{{$randomJobTitle}}",
+	"description": "{{$randomLoremParagraph}}",
+	"visible_external": true,
+	"password": "123",
+	"max_time_in_minutes": {{$randomInt}},
+	"success_score_in_percent": 80,
+	"questions_per_categories": [
+		{
+			"category_id": "{{category-id}}",
+			"quantity_of_questions": {{$randomLowInt}}
+		}
+	],
+	"fixed_questions": [
+		"{{question-id}}"
+	] 
+}
+```
+
+POST:/api/exam/{exam_id}/finish
+```json
+{
+    "candidate_id": "{{candidate-id}}",
+    "attempt_id": "{{attempt-id}}",
+    "answers": [
+        {
+            "question_id": "{{question-id}}",
+            "selected_option_ids": [
+                "ab4906ef-d803-4260-bbb9-964c4383b3c7"
+            ]
+        },
+        {
+            "question_id": "335a3484-a049-432f-b069-70bf65f8556e",
+            "selected_option_ids": [
+                "67b4883d-1cef-497e-ba58-a313042a1604"
+            ]
+        }
+    ]
 }
 ```
