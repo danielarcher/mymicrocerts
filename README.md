@@ -3,19 +3,26 @@
 With MyMicroCerts we provide to many companies the ability to perform evaluations to their employees using a secure, fast and reliable api.
 
 In this first release we have the following features.
+### MyMicroCerts Management Features
 - Company management
-- 
+- Plans management
+- Purchases of packages (mymicrocerts usage plans) by Companies using stripe
+### Usage for customers (Companies)
+- Candidates management
+- Questions management
+- Api keys management
+- Categories management
+- Exams management
+- Contracts management
+- Exam Statistics
 
-next release:
-- adicionar categorias (id/empresa/nome)
-- adicionar vinculo entre categorias e perguntas, uma pergunta pode ter apenas 1 categoria
-- remover vinculo pergunta -> exame
-- alterar POST /exam para receber array de questions, ou array de categorias
-    - neste caso, caso sejam utilizados os dois, o exame pode conter perguntas fixas e aleatorias, jamais repetindo as perguntas
-    - no momento de criacao do exame nao é verificado a validade da combinaçao escolhida
-    - cada categoria deve conter também o numero de questoes necessário
-    
-exemple 
+## Structure and Relations
+The diagram to understand the relation of the objects inside MyMicroCerts
+
+### Entity Relationship Diagram
+![database diagram](database.png "Database relations")
+
+exemple of questions
 ```json
 {
 	"questions": [
@@ -30,10 +37,3 @@ exemple
 	]
 }
 ```
-
-
-
-- adicionar validacao para quantidade de questoes maior do que atual categoria.
-- validacao para questoes fixas, devem existir
-- verificar se o teste é valido atualmente (mesma validacao da criacao)
-- implementar a limitacao dos planos

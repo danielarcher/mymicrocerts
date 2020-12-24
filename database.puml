@@ -1,101 +1,219 @@
 @startuml
-entity Plan {
-    id
-    name
-    description
-    price
-    credits
-    active (bool)
+
+!define table(x) class x << (T,#ffebf3) >>
+hide methods
+hide stereotypes
+
+table(attempt) {
+    {field} +id					char(36)
+    {field} exam_id				char(36)
+    {field} candidate_id		char(36)
+    {field} score_in_percent	?int
+    {field} score_absolute		?int
+    {field} finished_at			?timestamp
+    {field} approved			?tinyint(1)
+    {field} deleted_at			?timestamp
+    {field} created_at			?timestamp
+    {field} updated_at			?timestamp
 }
-entity Contract {
-    id
-    company_id
-    price
-    credits_total
-    credits_used
-    active (bool)
+attempt }-- exam
+attempt }-- candidate
+
+table(attempt_drawn_questions) {
+    {field} attempt_id		char(36)
+    {field} question_id		char(36)
+    {field} created_at		?timestamp
+    {field} updated_at		?timestamp
+    {field} correct_answer	?json
+    {field} received_answer	?json
+    {field} is_correct		?tinyint(1)
 }
-entity Company {
-    id
-    plan_id
-    name
-    country
-    +email
-    +contact_name
+attempt_drawn_questions }-- attempt
+attempt_drawn_questions }-- question
+
+
+table(candidate) {
+    {field} +id			char(36)
+    {field} company_id	?char(36)
+    {field} email		varchar(255)
+    {field} password	?varchar(255)
+    {field} first_name	varchar(255)
+    {field} last_name	varchar(255)
+    {field} role		varchar(255)
+    {field} verified	tinyint(1)
+    {field} active		tinyint(1)
+    {field} deleted_at	?timestamp
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
+    {field} custom		?json
+}
+candidate }-- company
+
+table(category) {
+    {field} +id			char(36)
+    {field} company_id	?char(36)
+    {field} name		varchar(255)
+    {field} deleted_at	?timestamp
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
+    {field} description	?text
+    {field} icon		?text
+    {field} custom		?json
+}
+category }-- company
+
+
+table(certificate) {
+    {field} +id					char(36)
+    {field} exam_id				char(36)
+    {field} candidate_id		char(36)
+    {field} score_in_percent	int
+    {field} deleted_at			?timestamp
+    {field} created_at			?timestamp
+    {field} updated_at			?timestamp
+    {field} rewards				?json
+}
+certificate }-- exam
+certificate }-- candidate
+
+table(company) {
+    {field} +id					char(36)
+    {field} name				varchar(255)
+    {field} country				varchar(255)
+    {field} email				varchar(255)
+    {field} contact_name		varchar(255)
+    {field} deleted_at			?timestamp
+    {field} created_at			?timestamp
+    {field} updated_at			?timestamp
+    {field} stripe_customer_id	?varchar(255)
 }
 
-entity Candidate {
-    id
-    company_id (nullable)
-    email
-    password
-    first_name
-    last_name
-    active (bool)
+
+table(company_api_keys) {
+    {field} id			char(36)
+    {field} company_id	char(36)
+    {field} name		varchar(255)
+    {field} key			text
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
+    {field} deleted_at	?timestamp
+}
+company_api_keys }-- company
+
+table(contract) {
+    {field} +id				char(36)
+    {field} company_id		char(36)
+    {field} name			varchar(255)
+    {field} description		?text
+    {field} price			double
+    {field} credits_total	int
+    {field} credits_used	int
+    {field} active			tinyint(1)
+    {field} deleted_at		?timestamp
+    {field} created_at		?timestamp
+    {field} updated_at		?timestamp
+}
+contract }-- company
+
+
+table(exam) {
+    {field} +id							char(36)
+    {field} company_id					char(36)
+    {field} title						varchar(255)
+    {field} description					?text
+    {field} success_score_in_percent	int
+    {field} max_time_in_minutes			int
+    {field} max_attempts_per_candidate	varchar(255)
+    {field} active						tinyint(1)
+    {field} visible_internal			tinyint(1)
+    {field} visible_external			tinyint(1)
+    {field} private						tinyint(1)
+    {field} access_id					?text
+    {field} link						?text
+    {field} access_password				?text
+    {field} deleted_at					?timestamp
+    {field} created_at					?timestamp
+    {field} updated_at					?timestamp
+    {field} custom						?json
+    {field} rewards						?json
+}
+exam }-- company
+
+
+table(exam_category) {
+    {field} exam_id					char(36)
+    {field} category_id				char(36)
+    {field} quantity_of_questions	?int
+    {field} created_at				?timestamp
+    {field} updated_at				?timestamp
+}
+exam_category }-- exam
+exam_category }-- category
+
+table(exam_question) {
+    {field} exam_id		char(36)
+    {field} question_id	char(36)
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
+}
+exam_question }-- exam
+exam_question }-- question
+
+
+table(migrations) {
+    {field} +id			int unsigned
+    {field} migration	varchar(255)
+    {field} batch		int
 }
 
-entity Exam {
-    id
-    company_id
-    title
-    description
-    badge (image/svg)
-    max_time_in_minutes
-    max_attempts_per_candidate
-    success_score_in_percent
-    visible_internal (bool)
-    visible_external (bool)
-    private (bool)
-    access_id
-    access_password
+
+table(option) {
+    {field} +id			char(36)
+    {field} question_id	char(36)
+    {field} text		text
+    {field} correct		tinyint(1)
+    {field} deleted_at	?timestamp
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
+}
+option }-- question
+
+
+table(plan) {
+    {field} +id						char(36)
+    {field} name					varchar(255)
+    {field} description				?text
+    {field} currency				varchar(255)
+    {field} price					double
+    {field} credits					int
+    {field} api_requests_per_hour	int
+    {field} active					tinyint(1)
+    {field} deleted_at				?timestamp
+    {field} created_at				?timestamp
+    {field} updated_at				?timestamp
 }
 
-entity Attempt {
-    id
-    exam_id
-    candidate_id
-    score_in_percent
-    score_absolute
-    started_at
-    finished_at
-}
 
-entity Question {
-    id
-    number
-    company_id
-    exam_id
-    description
+table(question) {
+    {field} +id			char(36)
+    {field} company_id	char(36)
+    {field} number		?int
+    {field} description	text
+    {field} deleted_at	?timestamp
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
 }
+question }-- company
 
-entity Option {
-    id
-    question_id
-    text
-    correct
+
+table(question_category) {
+    {field} question_id	char(36)
+    {field} category_id	char(36)
+    {field} created_at	?timestamp
+    {field} updated_at	?timestamp
 }
+question_category }-- question
+question_category }-- category
 
-entity Certificate {
-    id
-    title
-    description
-    badge
-    exam_id
-    candidate_id
-    score_in_percent
-}
-
-Plan -[hidden] Company
-Company -[hidden] Contract
-Contract }-- Company
-Company --{ Candidate
-Company --{ Exam
-Exam --{ Question
-Exam --{ Attempt
-Candidate --{ Attempt
-Exam --{ Certificate
-Candidate --{ Certificate
-Question --{ Option
-Question -[hidden] Option
 
 @enduml
